@@ -33,20 +33,20 @@ class _MainScreenState extends State<MainScreen> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: ''),
           BottomNavigationBarItem(
             icon: Icon(Icons.calculate_outlined),
             label: '',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: ''),
           BottomNavigationBarItem(
             icon: Icon(Icons.brightness_low_rounded),
             label: '',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF1C7097),
-        unselectedItemColor: Color(0xFF32ade6),
+        selectedItemColor: Color(0xFF45C4B0),
+        unselectedItemColor: Color(0xFF45C4B0),
         onTap: _onItemTapped,
       ),
     );
