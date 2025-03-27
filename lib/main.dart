@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:drivepay/UI/firstPage.dart';
+import 'package:drivepay/UI/home.dart';
+import 'package:drivepay/UI/map.dart';
+import 'package:drivepay/UI/result.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DrivePay',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
