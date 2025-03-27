@@ -5,6 +5,14 @@ class Firstpage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body:Column(mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(padding:const EdgeInsets.only(top: 50.0),
+        child: Text("Drive Pay",style: TextStyle(fontFamily: 'Modak',fontSize: 30.0),)
+        )
+      ],),
+    );
   }
 }
+
