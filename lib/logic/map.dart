@@ -53,7 +53,6 @@ class MapLogic {
           zoom: 18.0,
         ),
       );
-
       await _getAddress();
     } catch (e) {
       debugPrint('現在地取得エラー: $e');
