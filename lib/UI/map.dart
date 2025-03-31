@@ -75,10 +75,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.all(12),
               ),
-              onTap: () {
-                setState(() {
-                  // 場所の検索
-                });
+              onSubmitted: (value) async {
+                await _mapLogic.searchNavigate(value);
               },
             ),
           ),
@@ -169,6 +167,25 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
               left: 0,
               right: 0,
               child: buildRouteSearchArea(),
+            ),
+            Positioned(
+              bottom: 10,
+              right: 16,
+              child: ClipOval(
+                child: Material(
+                  color: Colors.white,
+                  child: InkWell(
+                    child: SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: Icon(Icons.my_location),
+                    ),
+                    onTap: () {
+                      _mapLogic.moveToCurrentLocation(context);
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),
