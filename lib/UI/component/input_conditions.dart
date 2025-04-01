@@ -11,9 +11,8 @@ class InputConditions extends StatelessWidget {
         border: Border.all(color: Color(0xFF439A8C), width: 2),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start, // 上揃え
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 左側の「条件」ラベル
           Container(
             width: 80,
             height: 80,
@@ -23,11 +22,9 @@ class InputConditions extends StatelessWidget {
             child: const Text('条件', style: TextStyle(color: Colors.white)),
           ),
 
-          // 右側の条件リスト
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 駐車場代
               Row(
                 children: [
                   Container(
@@ -63,7 +60,6 @@ class InputConditions extends StatelessWidget {
                 ],
               ),
 
-              // 高速代
               Row(
                 children: [
                   Container(
