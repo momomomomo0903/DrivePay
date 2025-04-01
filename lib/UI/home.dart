@@ -1,3 +1,4 @@
+import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import "package:drivepay/UI/result.dart";
 import "package:flutter/material.dart";
@@ -27,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('入力ページ')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -89,6 +89,8 @@ class _HomePageState extends State<HomePage> {
               width: 50,
               controller: _numberController,
             ),
+            const SizedBox(height: 20),
+            InputConditions(),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.center,
