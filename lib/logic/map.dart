@@ -124,6 +124,25 @@ class MapLogic {
     });
   }
 
+  LatLngBounds _createLatLngBounds(List<LatLng> points) {
+    double south = points.first.latitude;
+    double north = points.first.latitude;
+    double west = points.first.longitude;
+    double east = points.first.longitude;
+
+    for (var point in points) {
+      if (point.latitude < south) south = point.latitude;
+      if (point.latitude > north) north = point.latitude;
+      if (point.longitude < west) west = point.longitude;
+      if (point.longitude > east) east = point.longitude;
+    }
+
+    return LatLngBounds(
+      southwest: LatLng(south, west),
+      northeast: LatLng(north, east),
+    );
+  }
+
   Future<String?> findPlaceIdFromAddress(String address) async {
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
@@ -277,6 +296,12 @@ class MapLogic {
           width: 5,
           points: fullRoutePoints,
         );
+        if (mapController != null && fullRoutePoints.isNotEmpty) {
+          LatLngBounds bounds = _createLatLngBounds(fullRoutePoints);
+          mapController!.animateCamera(
+            CameraUpdate.newLatLngBounds(bounds, 50), // 50はパディング（調整可能）
+          );
+        }
 
         updatePolylines({polyline});
       } else {
