@@ -1,6 +1,6 @@
 import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
-import "package:drivepay/UI/result.dart";
+import 'package:drivepay/UI/result.dart';
 import "package:flutter/material.dart";
 
 class HomePage extends StatefulWidget {
@@ -28,10 +28,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF6FFFE),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 70.0, left: 30.0, right: 30.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
             Row(
               children: [
@@ -50,7 +52,7 @@ class _HomePageState extends State<HomePage> {
             InputText(
               label: '出発地',
               hintText: '駅、バス停、住所、施設',
-              width: 320,
+              width: 270,
               controller: _fromController,
             ),
             const SizedBox(height: 16),
@@ -65,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                   InputText(
                     label: '経由${index + 1}',
                     hintText: '駅、バス停、サービスエリア',
-                    width: 320,
+                    width: 270,
                     controller: controller,
                   ),
                   const SizedBox(height: 8),
@@ -93,7 +95,7 @@ class _HomePageState extends State<HomePage> {
             InputText(
               label: '到着地',
               hintText: '駅、バス停、住所、施設',
-              width: 320,
+              width: 270,
               controller: _toController,
             ),
             const SizedBox(height: 16),
@@ -105,11 +107,12 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
             InputConditions(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             Align(
               alignment: Alignment.center,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.only(left: 70.0, right: 70.0),
                   backgroundColor: Color(0xFF45C4B0),
                   foregroundColor: Colors.white,
                 ),

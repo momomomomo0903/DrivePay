@@ -32,7 +32,7 @@ class InputConditions extends StatelessWidget {
                     height: 40,
                     color: Color(0xFF45C4B0),
                     padding: const EdgeInsets.all(8),
-                    alignment: Alignment.center,
+                    alignment: Alignment.centerLeft,
                     child: const Text(
                       '〇 駐車場代',
                       style: TextStyle(color: Colors.white),
@@ -43,8 +43,10 @@ class InputConditions extends StatelessWidget {
                     height: 40,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
+                      color: Color(0xFFF6FFFE),
                       border: Border(
                         bottom: BorderSide(color: Color(0xFF439A8C), width: 2),
+                        left: BorderSide(color: Color(0xFF439A8C), width: 2),
                       ),
                     ),
                     child: const TextField(
@@ -67,7 +69,7 @@ class InputConditions extends StatelessWidget {
                     height: 40,
                     color: Color(0xFF45C4B0),
                     padding: const EdgeInsets.all(8),
-                    alignment: Alignment.center,
+                    alignment: Alignment.centerLeft,
                     child: const Text(
                       '〇 高速代',
                       style: TextStyle(color: Colors.white),
@@ -76,8 +78,13 @@ class InputConditions extends StatelessWidget {
                   Container(
                     width: 150,
                     height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(),
+                    alignment: Alignment.centerRight,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFF6FFFE),
+                      border: Border(
+                        left: BorderSide(color: Color(0xFF439A8C), width: 2),
+                      ),
+                    ),
                     child: const TextField(
                       cursorColor: Color(0xFF45C4B0),
                       decoration: InputDecoration(
