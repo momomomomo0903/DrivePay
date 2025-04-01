@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:drivepay/logic/map.dart';
@@ -12,13 +14,14 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   GoogleMapController? mapController;
   CameraPosition? _initialLocation;
-  bool _isExpanded = false;
   Set<Marker> _markers = {};
+  Set<Polyline> _polylines = {};
   late MapLogic _mapLogic;
+
   final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _startAddressController = TextEditingController();
   final TextEditingController _startController = TextEditingController();
   final TextEditingController _viaController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
 
   @override
   bool get wantKeepAlive => true;
@@ -26,9 +29,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-
     _mapLogic = MapLogic(
-      mapController: mapController,
       updateMarkers: (newMarkers) {
         setState(() {
           _markers = newMarkers;
@@ -36,7 +37,12 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       },
       updateStartAddress: (address) {
         setState(() {
-          _startAddressController.text = address;
+          _startController.text = address;
+        });
+      },
+      updatePolylines: (newPolylines) {
+        setState(() {
+          _polylines = newPolylines;
         });
       },
     );
@@ -46,99 +52,205 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         _initialLocation = cameraPosition;
       });
     });
-  }
-
-  Widget buildRouteSearchArea() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Material(
-            elevation: 4.0,
-            borderRadius: BorderRadius.circular(8),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: '目的地',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isExpanded = !_isExpanded;
-                    });
-                  },
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.all(12),
-              ),
-              onSubmitted: (value) async {
-                await _mapLogic.searchNavigate(value);
-              },
-            ),
-          ),
-        ),
-        AnimatedCrossFade(
-          firstChild: const SizedBox.shrink(),
-          secondChild: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _viaController,
-                  decoration: const InputDecoration(
-                    labelText: '経由地（任意）',
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                TextField(
-                  controller: _startController,
-                  decoration: const InputDecoration(
-                    labelText: '開始位置',
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    final start =
-                        _startController.text.isEmpty
-                            ? '現在地'
-                            : _startController.text;
-                    final via = _viaController.text;
-                    final destination = _searchController.text;
-
-                    // TODO: MapLogicでルート検索を呼び出す
-                  },
-                  child: const Text('検索'),
-                ),
-              ],
-            ),
-          ),
-          crossFadeState:
-              _isExpanded
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 300),
-        ),
-      ],
-    );
+    _mapLogic.startLocationUpdates();
   }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     _mapLogic.setMapController(controller);
-
     _mapLogic.getCurrentLocation((cameraPosition) {
       setState(() {
         _initialLocation = cameraPosition;
       });
     });
+  }
+
+  Widget buildSearchArea() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: '目的地を検索',
+            prefixIcon: const Icon(Icons.search),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          onSubmitted: (value) async {
+            await _mapLogic.searchNavigate(value);
+
+            if (_mapLogic.currentPosition != null) {
+              final LatLng address =
+                  (await _mapLogic.getAddressFromLatLng(
+                        LatLng(
+                          _mapLogic.currentPosition!.latitude,
+                          _mapLogic.currentPosition!.longitude,
+                        ),
+                      ))
+                      as LatLng;
+
+              if (address != null) {
+                await _mapLogic.showPlaceDetailsFromMarker(context, address);
+              } else {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('住所の取得に失敗しました')));
+              }
+            }
+          },
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await _mapLogic.searchNearbyGasStations();
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+          child: const Text('近くのガソリンスタンドを探す'),
+        ),
+      ],
+    );
+  }
+
+  void buildRouteSearch(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            minChildSize: 0.2,
+            maxChildSize: 0.85,
+            builder: (context, scrollController) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    const Center(
+                      child: Icon(Icons.drag_handle, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _startController,
+                      decoration: InputDecoration(
+                        hintText: '出発地を入力',
+                        prefixIcon: const Icon(Icons.circle_outlined),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _destinationController,
+                      decoration: InputDecoration(
+                        hintText: '目的地を入力',
+                        prefixIcon: const Icon(Icons.location_on),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onSubmitted: (value) async {
+                        final start =
+                            _startController.text.isEmpty
+                                ? await _mapLogic.getAddressFromLatLng(
+                                  LatLng(
+                                    _mapLogic.currentPosition!.latitude,
+                                    _mapLogic.currentPosition!.longitude,
+                                  ),
+                                )
+                                : _startController.text;
+
+                        final destination = _destinationController.text;
+
+                        if (destination.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: Text('エラー'),
+                                  content: Text('目的地を入力してください'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                          return;
+                        }
+
+                        await _mapLogic.drawRoute(start, destination, context);
+                        setState(() {});
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final start =
+                            _startController.text.isEmpty
+                                ? await _mapLogic.getAddressFromLatLng(
+                                  LatLng(
+                                    _mapLogic.currentPosition!.latitude,
+                                    _mapLogic.currentPosition!.longitude,
+                                  ),
+                                )
+                                : _startController.text;
+
+                        final destination = _destinationController.text;
+
+                        if (destination.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: Text('エラー'),
+                                  content: Text('目的地を入力してください'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                          return;
+                        }
+
+                        await _mapLogic.drawRoute(start, destination, context);
+                        setState(() {});
+                        Navigator.pop(context);
+                      },
+                      child: const Text('ルート検索'),
+                    ),
+                    const SizedBox(height: 10),
+                    const Divider(),
+                    const Text(
+                      '候補（例）',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    ListTile(title: Text('東京駅')),
+                    ListTile(title: Text('渋谷スクランブル交差点')),
+                  ],
+                ),
+              );
+            },
+          ),
+    );
   }
 
   @override
@@ -159,32 +271,33 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
               markers: _markers,
-              mapType: MapType.normal,
+              polylines: _polylines,
               zoomControlsEnabled: false,
+              onTap: (LatLng tappedPoint) {
+                _mapLogic.showPlaceDetailsFromMarker(context, tappedPoint);
+              },
             ),
+            Positioned(top: 10, left: 0, right: 0, child: buildSearchArea()),
             Positioned(
-              top: 10,
-              left: 0,
-              right: 0,
-              child: buildRouteSearchArea(),
+              bottom: 70,
+              right: 16,
+              child: FloatingActionButton(
+                backgroundColor: Colors.white,
+                onPressed: () {
+                  _mapLogic.moveToCurrentLocation(context);
+                },
+                child: const Icon(Icons.my_location),
+              ),
             ),
             Positioned(
               bottom: 10,
               right: 16,
-              child: ClipOval(
-                child: Material(
-                  color: Colors.white,
-                  child: InkWell(
-                    child: SizedBox(
-                      width: 56,
-                      height: 56,
-                      child: Icon(Icons.my_location),
-                    ),
-                    onTap: () {
-                      _mapLogic.moveToCurrentLocation(context);
-                    },
-                  ),
-                ),
+              child: FloatingActionButton(
+                backgroundColor: Colors.white,
+                onPressed: () {
+                  buildRouteSearch(context);
+                },
+                child: const Icon(Icons.turn_right_rounded),
               ),
             ),
           ],
