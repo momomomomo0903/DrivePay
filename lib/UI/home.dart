@@ -33,6 +33,20 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: Color(0xFFdf5656),
+                  size: 24,
+                ),
+                const Text(
+                  '現在地から出発',
+                  style: TextStyle(color: Color(0xFF45C4B0)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
             InputText(
               label: '出発地',
               hintText: '駅、バス停、住所、施設',
