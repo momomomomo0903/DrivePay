@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, unused_local_variable, unused_field, deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, unused_local_variable, unused_field, deprecated_member_use, unnecessary_null_comparison
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -25,10 +25,12 @@ class MapLogic {
     GoogleMapController? mapController,
   });
 
+  // マップの設定
   void setMapController(GoogleMapController controller) {
     mapController = controller;
   }
 
+  // 緯度経度から住所を取得
   Future<String> getAddressFromLatLng(LatLng latLng) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -47,6 +49,7 @@ class MapLogic {
     }
   }
 
+  // 現在地の取得
   Future<void> getCurrentLocation(
     Function(CameraPosition) setInitialLocation, {
     BuildContext? context,
@@ -94,6 +97,7 @@ class MapLogic {
     }
   }
 
+  // カメラ位置の設定
   void moveToCurrentLocation(BuildContext context) async {
     await getCurrentLocation((cameraPosition) {
       if (mapController != null) {
@@ -104,26 +108,7 @@ class MapLogic {
     }, context: context);
   }
 
-  void startLocationUpdates() {
-    const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.bestForNavigation,
-      distanceFilter: 10, // 10m以上動いたら更新
-    );
-
-    _positionStream = Geolocator.getPositionStream(
-      locationSettings: locationSettings,
-    ).listen((Position position) {
-      _currentPosition = position;
-
-      // カメラを現在地にアニメーション移動
-      if (mapController != null) {
-        mapController!.animateCamera(
-          CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
-        );
-      }
-    });
-  }
-
+  // ルートの全体が見える範囲を探索
   LatLngBounds _createLatLngBounds(List<LatLng> points) {
     double south = points.first.latitude;
     double north = points.first.latitude;
@@ -143,20 +128,21 @@ class MapLogic {
     );
   }
 
-  Future<String?> findPlaceIdFromAddress(String address) async {
+  // 住所からplaceIDを取得
+  Future<String?> findPlaceIdFromAddress(LatLng latLng) async {
     final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
-      '?input=${Uri.encodeComponent(address)}'
-      '&inputtype=textquery'
-      '&fields=place_id'
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+      '?location=${latLng.latitude},${latLng.longitude}'
+      '&radius=30' // 半径30m以内にある施設を検索
+      '&type=point_of_interest'
       '&key=$apiKey',
     );
 
     try {
       final response = await http.get(url);
       final data = json.decode(response.body);
-      if (data['status'] == 'OK' && data['candidates'].isNotEmpty) {
-        return data['candidates'][0]['place_id'];
+      if (data['status'] == 'OK' && data['results'] != null) {
+        return data['results'][0]['place_id'];
       }
     } catch (e) {
       debugPrint('Place IDの取得エラー: $e');
@@ -164,15 +150,85 @@ class MapLogic {
     return null;
   }
 
+  // マーカーの情報を表示
   Future<void> showPlaceDetailsFromMarker(
     BuildContext context,
     LatLng latLng,
   ) async {
     try {
-      final address = await getAddressFromLatLng(latLng);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('場所: $address')));
+      final placeId = await findPlaceIdFromAddress(latLng);
+      if (placeId != null) {
+        debugPrint('placeID:$placeId');
+        debugPrint('マップ情報取得開始');
+        final url = Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/details/json'
+          '?place_id=$placeId'
+          '&fields=name,rating,formatted_address,formatted_phone_number,geometry,photos,opening_hours,reviews,user_ratings_total'
+          '&language=ja'
+          '&key=$apiKey',
+        );
+        final response = await http.get(url);
+        final data = json.decode(response.body);
+
+        if (data['status'] == 'OK' && data['result'] != null) {
+          final place = data['result'];
+          final name = place['name'] ?? '名称不明';
+          final address = place['formatted_address'] ?? '住所不明';
+          final rating = place['rating']?.toString() ?? '評価なし';
+          final totalRatings = place['user_ratings_total']?.toString() ?? '0';
+          final phone = place['formatted_phone_number'] ?? '電話番号なし';
+          final photos = place['photos'];
+          String? photoUrl;
+          if (photos != null && photos.isNotEmpty) {
+            final photoRef = photos[0]['photo_reference'];
+            if (photoRef != null) {
+              photoUrl =
+                  'https://maps.googleapis.com/maps/api/place/photo'
+                  '?maxwidth=400'
+                  '&photoreference=$photoRef'
+                  '&key=$apiKey';
+            }
+          }
+
+          debugPrint('施設情報を取得完了');
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder:
+                (context) => DraggableScrollableSheet(
+                  initialChildSize: 0.6,
+                  minChildSize: 0.2,
+                  maxChildSize: 0.85,
+                  builder: (context, ScrollController) {
+                    return Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: ListView(
+                        controller: ScrollController,
+                        children: [
+                          const Center(
+                            child: Icon(Icons.drag_handle, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 10),
+                          Text('$name', style: TextStyle(fontSize: 30)),
+                          Text('$rating($totalRatings)'),
+                          Text(address),
+                          Text(phone),
+                          if (photoUrl != null) Image.network(photoUrl),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+          );
+        }
+      }
     } catch (e) {
       debugPrint('施設情報取得エラー: $e');
       ScaffoldMessenger.of(
@@ -181,6 +237,7 @@ class MapLogic {
     }
   }
 
+  // 目的地を検索
   Future<void> searchNavigate(String address) async {
     try {
       List<Location> locations = await locationFromAddress(address);
@@ -198,45 +255,7 @@ class MapLogic {
     }
   }
 
-  Future<void> searchDestination(
-    String destination,
-    BuildContext context,
-    Function(Marker) onMarkerCreated,
-  ) async {
-    if (destination.isEmpty) return;
-
-    final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/geocode.json'
-      '?address=${Uri.encodeComponent(destination)}'
-      '&key=$apiKey',
-    );
-
-    try {
-      final response = await http.get(url);
-      final data = json.decode(response.body);
-
-      if (data['status'] == 'OK') {
-        final location = data['results'][0]['geometry']['location'];
-        final latLng = LatLng(location['lat'], location['lng']);
-
-        final marker = Marker(
-          markerId: const MarkerId('destination'),
-          position: latLng,
-          infoWindow: InfoWindow(title: destination),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('場所が見つかりません')));
-      }
-    } catch (e) {
-      debugPrint('検索エラー:$e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('検索に失敗しました')));
-    }
-  }
-
+  // ルートの取得・表示
   Future<void> drawRoute(
     String startAdd,
     String destinationAdd,
@@ -339,6 +358,7 @@ class MapLogic {
     }
   }
 
+  // polylineを使える形式に変更
   List<LatLng> _decodePolyline(String encoded) {
     List<LatLng> polyline = [];
     int index = 0, len = encoded.length;
@@ -369,7 +389,53 @@ class MapLogic {
     return polyline;
   }
 
-  Future<void> searchNearbyGasStations() async {
-    return;
+  // 近くのガソスタを検索
+  Future<void> searchNearbyGasStations(BuildContext context) async {
+    if (_currentPosition == null) return;
+
+    final lat = _currentPosition!.latitude;
+    final lng = _currentPosition!.longitude;
+
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+      '?location=$lat,$lng'
+      '&radius=10000' // 10km圏内の検索
+      '&type=gas_station' // ガソリンスタンドを検索
+      '&key=$apiKey',
+    );
+
+    try {
+      final response = await http.get(url);
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'OK') {
+        Set<Marker> gasStationMarkers = {};
+
+        for (var result in data['results']) {
+          final loc = result['geometry']['location'];
+          final name = result['name'];
+          final position = LatLng(loc['lat'], loc['lng']);
+
+          gasStationMarkers.add(
+            Marker(
+              markerId: MarkerId(result['place_id']),
+              position: position,
+              infoWindow: InfoWindow(title: name),
+            ),
+          );
+        }
+
+        updateMarkers(gasStationMarkers);
+        mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(LatLng(lat, lng), 14),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('ガソリンスタンドを検索できませんでした')));
+      }
+    } catch (e) {
+      debugPrint('ガソリンスタンド検索例外: $e');
+    }
   }
 }
