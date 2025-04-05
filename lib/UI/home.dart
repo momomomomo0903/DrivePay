@@ -124,7 +124,9 @@ class _HomePageState extends State<HomePage> {
 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ResultPage()),
+                    MaterialPageRoute(builder: (context) => const ResultPage(perPersonAmount: 1200,
+    peopleCount: 5,
+    distance: 10.0,)),
                   );
                 },
                 child: const Text('計算する'),

@@ -16,7 +16,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = const [
     HomePage(),
-    ResultPage(),
+    ResultPage(perPersonAmount: 1200,
+  peopleCount: 5,
+  distance: 10.0,),
     MapPage(),
     SettingPage(),
   ];
