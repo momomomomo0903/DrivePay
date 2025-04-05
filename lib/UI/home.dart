@@ -320,6 +320,20 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: const Text('計算する'),
                 ),
+                onPressed: () {
+                  // TODO: 最終的にこれらの値をResultPageに渡す
+                  final from = _fromController.text;
+                  final viaList = _viaControllers.map((c) => c.text).toList();
+                  final to = _toController.text;
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ResultPage(perPersonAmount: 1200,
+    peopleCount: 5,
+    distance: 10.0,)),
+                  );
+                },
+                child: const Text('計算する'),
               ),
             ],
           ),
