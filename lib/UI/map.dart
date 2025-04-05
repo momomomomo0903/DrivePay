@@ -103,7 +103,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         ),
         ElevatedButton(
           onPressed: () async {
-            await _mapLogic.searchNearbyGasStations();
+            await _mapLogic.searchNearbyGasStations(context);
           },
           style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
           child: const Text('近くのガソリンスタンドを探す'),
