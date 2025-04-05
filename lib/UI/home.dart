@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
             InputText(
               label: '出発地',
               hintText: '駅、バス停、住所、施設',
-              width: 270,
+              width: 251,
               controller: _fromController,
             ),
             const SizedBox(height: 16),
@@ -64,29 +64,11 @@ class _HomePageState extends State<HomePage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: InputText(
-                          label: '経由${index + 1}',
-                          hintText: '駅、バス停、サービスエリア',
-                          width: 270,
-                          controller: controller,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.remove_circle_outline,
-                          color: Color(0xFFdf5656),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _viaControllers.removeAt(index);
-                            controller.dispose();
-                          });
-                        },
-                      ),
-                    ],
+                  InputText(
+                    label: '経由${index + 1}',
+                    hintText: '駅、バス停、サービスエリア',
+                    width: 251,
+                    controller: controller,
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -113,7 +95,7 @@ class _HomePageState extends State<HomePage> {
             InputText(
               label: '到着地',
               hintText: '駅、バス停、住所、施設',
-              width: 270,
+              width: 251,
               controller: _toController,
             ),
             const SizedBox(height: 16),
