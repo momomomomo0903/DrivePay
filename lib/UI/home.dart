@@ -5,6 +5,8 @@ import 'package:drivepay/config/api_key.dart';
 import "package:flutter/material.dart";
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
+import 'package:geolocator/geolocator.dart';
 
 final String apiKey = ApiKeys.api_key;
 void fetchData(
@@ -58,6 +60,86 @@ class _HomePageState extends State<HomePage> {
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
 
+  // エラーダイアログを表示する関数
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('エラー'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 現在地を取得する関数
+  Future<void> getCurrentLocation() async {
+    try {
+      // 位置情報サービスが有効かチェック
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showErrorDialog('位置情報サービスが無効になっています。\n設定から位置情報を有効にしてください。');
+        return;
+      }
+
+      // 位置情報の権限をチェック
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          _showErrorDialog('位置情報の利用が拒否されました。\n設定から位置情報の利用を許可してください。');
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        _showErrorDialog('位置情報の利用が永久に拒否されています。\n設定アプリから位置情報の利用を許可してください。');
+        return;
+      }
+
+      // 位置情報を取得
+      final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10), // タイムアウトを10秒に設定
+      );
+
+      // 住所に変換
+      final response = await http.get(
+        Uri.parse(
+          'https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$apiKey&language=ja',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          setState(() {
+            _fromController.text = data['results'][0]['formatted_address'];
+          });
+        } else {
+          _showErrorDialog('住所の取得に失敗しました。\nエラー: ${data['status']}');
+        }
+      } else {
+        _showErrorDialog('住所の取得に失敗しました。\nステータスコード: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e is TimeoutException) {
+        _showErrorDialog('位置情報の取得がタイムアウトしました。\nもう一度お試しください。');
+      } else {
+        _showErrorDialog('現在地の取得に失敗しました。\nエラー: $e');
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -73,20 +155,22 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.only(top: 70.0, left: 30.0, right: 30.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.location_on,
-                  color: Color(0xFFdf5656),
-                  size: 24,
-                ),
-                const Text(
-                  '現在地から出発',
-                  style: TextStyle(color: Color(0xFF45C4B0)),
-                ),
-              ],
+            GestureDetector(
+              onTap: getCurrentLocation,
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    color: Color(0xFFdf5656),
+                    size: 24,
+                  ),
+                  const Text(
+                    '現在地から出発',
+                    style: TextStyle(color: Color(0xFF45C4B0)),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 2),
             InputText(
@@ -162,24 +246,22 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   // バリデーションチェック
                   String? errorMessage;
-                  
+
                   // 出発地と到着地のチェック
-                  if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                  if (_fromController.text.isEmpty ||
+                      _toController.text.isEmpty) {
                     errorMessage = '出発地と到着地を入力してください';
                   }
-                  
                   // 乗車人数の数値チェック
                   else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
                     errorMessage = '乗車人数は数値で入力してください';
                   }
-                  
                   // 駐車場代と高速代の数値チェック（入力されている場合のみ）
-                  else if (_parkingController.text.isNotEmpty && 
-                           !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
+                  else if (_parkingController.text.isNotEmpty &&
+                      !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
                     errorMessage = '駐車場代は数値で入力してください';
-                  }
-                  else if (_highwayController.text.isNotEmpty && 
-                           !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
+                  } else if (_highwayController.text.isNotEmpty &&
+                      !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
                     errorMessage = '高速代は数値で入力してください';
                   }
 
