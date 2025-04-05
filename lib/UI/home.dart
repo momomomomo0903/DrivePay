@@ -136,9 +136,18 @@ class _HomePageState extends State<HomePage> {
               }),
               TextButton.icon(
                 onPressed: () {
-                  setState(() {
-                    _viaControllers.add(TextEditingController());
-                  });
+                  if (_viaControllers.length < 3) {
+                    setState(() {
+                      _viaControllers.add(TextEditingController());
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('経由地は最大3つまでです'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
                 icon: const Icon(
                   Icons.add_circle_outline,
