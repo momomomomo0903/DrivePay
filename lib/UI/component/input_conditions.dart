@@ -76,6 +76,7 @@ class InputConditions extends StatelessWidget {
           child: TextField(
             controller: controller,
             cursorColor: Color(0xFF45C4B0),
+            keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               hintText: '数値を入力',
               hintStyle: TextStyle(color: Colors.grey),

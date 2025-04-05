@@ -160,7 +160,40 @@ class _HomePageState extends State<HomePage> {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () {
-                  // TODO: 最終的にこれらの値をResultPageに渡す
+                  // バリデーションチェック
+                  String? errorMessage;
+                  
+                  // 出発地と到着地のチェック
+                  if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                    errorMessage = '出発地と到着地を入力してください';
+                  }
+                  
+                  // 乗車人数の数値チェック
+                  else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    errorMessage = '乗車人数は数値で入力してください';
+                  }
+                  
+                  // 駐車場代と高速代の数値チェック（入力されている場合のみ）
+                  else if (_parkingController.text.isNotEmpty && 
+                           !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
+                    errorMessage = '駐車場代は数値で入力してください';
+                  }
+                  else if (_highwayController.text.isNotEmpty && 
+                           !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
+                    errorMessage = '高速代は数値で入力してください';
+                  }
+
+                  if (errorMessage != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(errorMessage),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  // バリデーション成功時の処理
                   final from = _fromController.text;
                   final viaList = _viaControllers.map((c) => c.text).toList();
                   final to = _toController.text;
