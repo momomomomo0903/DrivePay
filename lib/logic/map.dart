@@ -320,7 +320,53 @@ class MapLogic {
     return polyline;
   }
 
-  Future<void> searchNearbyGasStations() async {
-    return;
+  // 近くのガソスタを検索
+  Future<void> searchNearbyGasStations(BuildContext context) async {
+    if (_currentPosition == null) return;
+
+    final lat = _currentPosition!.latitude;
+    final lng = _currentPosition!.longitude;
+
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+      '?location=$lat,$lng'
+      '&radius=10000' // 10km圏内の検索
+      '&type=gas_station' // ガソリンスタンドを検索
+      '&key=$apiKey',
+    );
+
+    try {
+      final response = await http.get(url);
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'OK') {
+        Set<Marker> gasStationMarkers = {};
+
+        for (var result in data['results']) {
+          final loc = result['geometry']['location'];
+          final name = result['name'];
+          final position = LatLng(loc['lat'], loc['lng']);
+
+          gasStationMarkers.add(
+            Marker(
+              markerId: MarkerId(result['place_id']),
+              position: position,
+              infoWindow: InfoWindow(title: name),
+            ),
+          );
+        }
+
+        updateMarkers(gasStationMarkers);
+        mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(LatLng(lat, lng), 14),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('ガソリンスタンドを検索できませんでした')));
+      }
+    } catch (e) {
+      debugPrint('ガソリンスタンド検索例外: $e');
+    }
   }
 }
