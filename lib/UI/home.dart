@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+
 import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
@@ -9,7 +11,7 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
 final String apiKey = ApiKeys.api_key;
-void fetchData(
+Future<Map<String, dynamic>> fetchData(
   String from,
   String to,
   String number,
@@ -17,54 +19,67 @@ void fetchData(
   String? highway,
   List<String> viaList,
 ) async {
-  // 経由地をパイプ区切りで結合
-  final String viaString = viaList.join('|');
-  final String waypointsParam =
-      viaString.isNotEmpty ? '&waypoints=$viaString' : '';
+  try {
+    // 経由地をパイプ区切りで結合
+    final String viaString = viaList.join('|');
+    final String waypointsParam =
+        viaString.isNotEmpty ? '&waypoints=$viaString' : '';
 
-  final Uri uri = Uri.parse(
-    "https://maps.googleapis.com/maps/api/directions/json"
-    "?origin=${Uri.encodeComponent(from)}"
-    "&destination=${Uri.encodeComponent(to)}"
-    "$waypointsParam"
-    "&key=$apiKey",
-  );
-
-  final response = await http.get(uri);
-
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-
-    // すべての legs の距離を合算
-    double totalDistanceMeters = 0;
-    for (var leg in data['routes'][0]['legs']) {
-      totalDistanceMeters += leg['distance']['value'];
-    }
-
-    final distanceKm = totalDistanceMeters / 1000.0;
-
-    final parkingFee = int.tryParse(parking ?? '') ?? 0;
-    final highwayFee = int.tryParse(highway ?? '') ?? 0;
-    final sumFare = distanceKm * 15 + parkingFee + highwayFee;
-    final perPersonFee = sumFare / int.parse(number);
-
-    print(
-      "✅ 合計料金（円）: ${sumFare.toStringAsFixed(1)}\n"
-      "一人当たりの料金: ${perPersonFee.toStringAsFixed(1)}\n"
-      "距離（キロメートル）: ${distanceKm.toStringAsFixed(1)}",
+    final Uri uri = Uri.parse(
+      "https://maps.googleapis.com/maps/api/directions/json"
+      "?origin=${Uri.encodeComponent(from)}"
+      "&destination=${Uri.encodeComponent(to)}"
+      "$waypointsParam"
+      "&key=$apiKey",
     );
-  } else {
-    print("❌ エラー: ${response.statusCode}");
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      // すべての legs の距離を合算
+      double totalDistanceMeters = 0;
+      for (var leg in data['routes'][0]['legs']) {
+        totalDistanceMeters += leg['distance']['value'];
+      }
+
+      final distanceKm = totalDistanceMeters / 1000.0;
+
+      final parkingFee = int.tryParse(parking ?? '') ?? 0;
+      final highwayFee = int.tryParse(highway ?? '') ?? 0;
+      final sumFare = distanceKm * 15 + parkingFee + highwayFee;
+      final perPersonFee = sumFare / int.parse(number);
+
+      debugPrint(
+        "✅ 合計料金（円）: ${sumFare.toStringAsFixed(1)}\n"
+        "一人当たりの料金: ${perPersonFee.toStringAsFixed(1)}\n"
+        "距離（キロメートル）: ${distanceKm.toStringAsFixed(1)}",
+      );
+      return {
+        'distance': distanceKm,
+        'total': sumFare.toInt(),
+        'perPerson': perPersonFee.toInt(),
+        'people': int.parse(number),
+      };
+    } else {
+      debugPrint("❌ エラー: ${response.statusCode}");
+    }
+  } catch (e) {
+    debugPrint('エラー: $e');
+    rethrow;
   }
+
+  throw Exception('データの取得に失敗しました');
 }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
@@ -269,7 +284,7 @@ class _HomePageState extends State<HomePage> {
                     backgroundColor: Color(0xFF45C4B0),
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     // バリデーションチェック
                     String? errorMessage;
 
@@ -310,30 +325,29 @@ class _HomePageState extends State<HomePage> {
                     final number = _numberController.text;
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
-                    fetchData(from, to, number, parking, highway, viaList);
+
+                    final result = await fetchData(
+                      from,
+                      to,
+                      number,
+                      parking,
+                      highway,
+                      viaList,
+                    );
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ResultPage(),
+                        builder:
+                            (context) => ResultPage(
+                              perPersonAmount: result['perPerson'],
+                              peopleCount: result['people'],
+                              distance: result['distance'],
+                            ),
                       ),
                     );
                   },
                   child: const Text('計算する'),
                 ),
-                onPressed: () {
-                  // TODO: 最終的にこれらの値をResultPageに渡す
-                  final from = _fromController.text;
-                  final viaList = _viaControllers.map((c) => c.text).toList();
-                  final to = _toController.text;
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ResultPage(perPersonAmount: 1200,
-    peopleCount: 5,
-    distance: 10.0,)),
-                  );
-                },
-                child: const Text('計算する'),
               ),
             ],
           ),
