@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
-
+import 'package:drivepay/UI/component/webViewPage.dart';
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
 
@@ -131,14 +131,17 @@ class SettingPage extends StatelessWidget {
     );
   }
 
-  void _navigateToContact(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Firstpage(),
+void _navigateToContact(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const WebViewPage(
+        title: 'お問い合わせフォーム',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSe1UBYrgiDekPvA2RMLPVZvsrQwQdJ0j98iNiNZDyy1m6Z3ZQ/viewform?usp=header',
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildFeatureButton({
     required IconData icon,
