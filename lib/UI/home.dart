@@ -104,11 +104,29 @@ class _HomePageState extends State<HomePage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  InputText(
-                    label: '経由${index + 1}',
-                    hintText: '駅、バス停、サービスエリア',
-                    width: 270,
-                    controller: controller,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InputText(
+                          label: '経由${index + 1}',
+                          hintText: '駅、バス停、サービスエリア',
+                          width: 270,
+                          controller: controller,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.remove_circle_outline,
+                          color: Color(0xFFdf5656),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _viaControllers.removeAt(index);
+                            controller.dispose();
+                          });
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                 ],
