@@ -1,11 +1,49 @@
 import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
+import 'package:drivepay/config/api_key.dart';
 import "package:flutter/material.dart";
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+final String apiKey = ApiKeys.api_key;
+void fetchData(
+  String from,
+  String to,
+  String number,
+  String? parking,
+  String? highway,
+) async {
+  final response = await http.get(
+    Uri.parse(
+      "https://maps.googleapis.com/maps/api/directions/json?origin=$from&destination=$to&key=$apiKey",
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final distancekiroMeters =
+        data['routes'][0]['legs'][0]['distance']['value'] / 1000;
+
+    //  Nullや空文字なら0にする
+    final parkingFee = int.tryParse(parking ?? '') ?? 0;
+    final highwayFee = int.tryParse(highway ?? '') ?? 0;
+
+    final sumFare = distancekiroMeters * 15 + parkingFee + highwayFee;
+    final perPersonFee = sumFare / int.parse(number);
+
+    print(
+      "✅ 合計料金（円）: $sumFare\n"
+      "一人当たりの料金: $perPersonFee\n"
+      "距離（キロメートル）: $distancekiroMeters",
+    );
+  } else {
+    print("❌ エラー: ${response.statusCode}");
+  }
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -14,6 +52,8 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _parkingController = TextEditingController();
+  final TextEditingController _highwayController = TextEditingController();
 
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
@@ -106,7 +146,10 @@ class _HomePageState extends State<HomePage> {
               controller: _numberController,
             ),
             const SizedBox(height: 20),
-            InputConditions(),
+            InputConditions(
+              parkingController: _parkingController,
+              highwayController: _highwayController,
+            ),
             const SizedBox(height: 50),
             Align(
               alignment: Alignment.center,
@@ -121,7 +164,10 @@ class _HomePageState extends State<HomePage> {
                   final from = _fromController.text;
                   final viaList = _viaControllers.map((c) => c.text).toList();
                   final to = _toController.text;
-
+                  final number = _numberController.text;
+                  final parking = _parkingController.text;
+                  final highway = _highwayController.text;
+                  fetchData(from, to, number, parking, highway);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ResultPage()),
