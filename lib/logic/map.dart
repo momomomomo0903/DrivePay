@@ -108,27 +108,6 @@ class MapLogic {
     }, context: context);
   }
 
-  // カメラ位置のリアルタイム更新
-  void startLocationUpdates() {
-    const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.bestForNavigation,
-      distanceFilter: 10, // 10m以上動いたら更新
-    );
-
-    _positionStream = Geolocator.getPositionStream(
-      locationSettings: locationSettings,
-    ).listen((Position position) {
-      _currentPosition = position;
-
-      // カメラを現在地にアニメーション移動
-      if (mapController != null) {
-        mapController!.animateCamera(
-          CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
-        );
-      }
-    });
-  }
-
   // ルートの全体が見える範囲を探索
   LatLngBounds _createLatLngBounds(List<LatLng> points) {
     double south = points.first.latitude;
