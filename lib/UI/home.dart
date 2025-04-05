@@ -276,24 +276,24 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     // バリデーションチェック
                     String? errorMessage;
-                    
+
                     // 出発地と到着地のチェック
-                    if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                    if (_fromController.text.isEmpty ||
+                        _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
                     }
-                    
                     // 乗車人数の数値チェック
-                    else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    else if (!RegExp(
+                      r'^\d+$',
+                    ).hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
                     }
-                    
                     // 駐車場代と高速代の数値チェック（入力されている場合のみ）
-                    else if (_parkingController.text.isNotEmpty && 
-                             !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
+                    else if (_parkingController.text.isNotEmpty &&
+                        !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
                       errorMessage = '駐車場代は数値で入力してください';
-                    }
-                    else if (_highwayController.text.isNotEmpty && 
-                             !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
+                    } else if (_highwayController.text.isNotEmpty &&
+                        !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
                       errorMessage = '高速代は数値で入力してください';
                     }
 
@@ -314,10 +314,12 @@ class _HomePageState extends State<HomePage> {
                     final number = _numberController.text;
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
-                    fetchData(from, to, number, parking, highway);
+                    fetchData(from, to, number, parking, highway, viaList);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ResultPage()),
+                      MaterialPageRoute(
+                        builder: (context) => const ResultPage(),
+                      ),
                     );
                   },
                   child: const Text('計算する'),
@@ -326,7 +328,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),  
+      ),
     );
   }
 }
