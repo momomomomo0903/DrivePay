@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, unused_local_variable, unused_field, deprecated_member_use, unnecessary_null_comparison
+// ignore_for_file: use_build_context_synchronously, unused_local_variable, unused_field, deprecated_member_use, unnecessary_null_comparison, non_constant_identifier_names, avoid_types_as_parameter_names
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';

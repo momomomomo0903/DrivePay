@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:drivepay/logic/map.dart';
@@ -19,6 +19,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _startController = TextEditingController();
+  // TODO:経由地の追加
   final TextEditingController _viaController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
 
