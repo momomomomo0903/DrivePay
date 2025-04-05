@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:drivepay/logic/map.dart';
@@ -52,7 +51,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         _initialLocation = cameraPosition;
       });
     });
-    _mapLogic.startLocationUpdates();
   }
 
   void _onMapCreated(GoogleMapController controller) {
