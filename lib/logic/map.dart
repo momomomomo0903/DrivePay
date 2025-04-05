@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, unused_local_variable, unused_field, deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, unused_local_variable, unused_field, deprecated_member_use, unnecessary_null_comparison
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -128,21 +128,21 @@ class MapLogic {
     );
   }
 
-  // placeIdから住所を取得
-  Future<String?> findPlaceIdFromAddress(String address) async {
+  // 住所からplaceIDを取得
+  Future<String?> findPlaceIdFromAddress(LatLng latLng) async {
     final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
-      '?input=${Uri.encodeComponent(address)}'
-      '&inputtype=textquery'
-      '&fields=place_id'
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+      '?location=${latLng.latitude},${latLng.longitude}'
+      '&radius=30' // 半径30m以内にある施設を検索
+      '&type=point_of_interest'
       '&key=$apiKey',
     );
 
     try {
       final response = await http.get(url);
       final data = json.decode(response.body);
-      if (data['status'] == 'OK' && data['candidates'].isNotEmpty) {
-        return data['candidates'][0]['place_id'];
+      if (data['status'] == 'OK' && data['results'] != null) {
+        return data['results'][0]['place_id'];
       }
     } catch (e) {
       debugPrint('Place IDの取得エラー: $e');
@@ -156,10 +156,79 @@ class MapLogic {
     LatLng latLng,
   ) async {
     try {
-      final address = await getAddressFromLatLng(latLng);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('場所: $address')));
+      final placeId = await findPlaceIdFromAddress(latLng);
+      if (placeId != null) {
+        debugPrint('placeID:$placeId');
+        debugPrint('マップ情報取得開始');
+        final url = Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/details/json'
+          '?place_id=$placeId'
+          '&fields=name,rating,formatted_address,formatted_phone_number,geometry,photos,opening_hours,reviews,user_ratings_total'
+          '&language=ja'
+          '&key=$apiKey',
+        );
+        final response = await http.get(url);
+        final data = json.decode(response.body);
+
+        if (data['status'] == 'OK' && data['result'] != null) {
+          final place = data['result'];
+          final name = place['name'] ?? '名称不明';
+          final address = place['formatted_address'] ?? '住所不明';
+          final rating = place['rating']?.toString() ?? '評価なし';
+          final totalRatings = place['user_ratings_total']?.toString() ?? '0';
+          final phone = place['formatted_phone_number'] ?? '電話番号なし';
+          final photos = place['photos'];
+          String? photoUrl;
+          if (photos != null && photos.isNotEmpty) {
+            final photoRef = photos[0]['photo_reference'];
+            if (photoRef != null) {
+              photoUrl =
+                  'https://maps.googleapis.com/maps/api/place/photo'
+                  '?maxwidth=400'
+                  '&photoreference=$photoRef'
+                  '&key=$apiKey';
+            }
+          }
+
+          debugPrint('施設情報を取得完了');
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder:
+                (context) => DraggableScrollableSheet(
+                  initialChildSize: 0.6,
+                  minChildSize: 0.2,
+                  maxChildSize: 0.85,
+                  builder: (context, ScrollController) {
+                    return Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: ListView(
+                        controller: ScrollController,
+                        children: [
+                          const Center(
+                            child: Icon(Icons.drag_handle, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 10),
+                          Text('$name', style: TextStyle(fontSize: 30)),
+                          Text('$rating($totalRatings)'),
+                          Text(address),
+                          Text(phone),
+                          if (photoUrl != null) Image.network(photoUrl),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+          );
+        }
+      }
     } catch (e) {
       debugPrint('施設情報取得エラー: $e');
       ScaffoldMessenger.of(
