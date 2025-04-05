@@ -13,29 +13,43 @@ void fetchData(
   String number,
   String? parking,
   String? highway,
+  List<String> viaList,
 ) async {
-  final response = await http.get(
-    Uri.parse(
-      "https://maps.googleapis.com/maps/api/directions/json?origin=$from&destination=$to&key=$apiKey",
-    ),
+  // 経由地をパイプ区切りで結合
+  final String viaString = viaList.join('|');
+  final String waypointsParam =
+      viaString.isNotEmpty ? '&waypoints=$viaString' : '';
+
+  final Uri uri = Uri.parse(
+    "https://maps.googleapis.com/maps/api/directions/json"
+    "?origin=${Uri.encodeComponent(from)}"
+    "&destination=${Uri.encodeComponent(to)}"
+    "$waypointsParam"
+    "&key=$apiKey",
   );
+
+  final response = await http.get(uri);
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    final distancekiroMeters =
-        data['routes'][0]['legs'][0]['distance']['value'] / 1000;
 
-    //  Nullや空文字なら0にする
+    // すべての legs の距離を合算
+    double totalDistanceMeters = 0;
+    for (var leg in data['routes'][0]['legs']) {
+      totalDistanceMeters += leg['distance']['value'];
+    }
+
+    final distanceKm = totalDistanceMeters / 1000.0;
+
     final parkingFee = int.tryParse(parking ?? '') ?? 0;
     final highwayFee = int.tryParse(highway ?? '') ?? 0;
-
-    final sumFare = distancekiroMeters * 15 + parkingFee + highwayFee;
+    final sumFare = distanceKm * 15 + parkingFee + highwayFee;
     final perPersonFee = sumFare / int.parse(number);
 
     print(
-      "✅ 合計料金（円）: $sumFare\n"
-      "一人当たりの料金: $perPersonFee\n"
-      "距離（キロメートル）: $distancekiroMeters",
+      "✅ 合計料金（円）: ${sumFare.toStringAsFixed(1)}\n"
+      "一人当たりの料金: ${perPersonFee.toStringAsFixed(1)}\n"
+      "距離（キロメートル）: ${distanceKm.toStringAsFixed(1)}",
     );
   } else {
     print("❌ エラー: ${response.statusCode}");
@@ -200,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                   final number = _numberController.text;
                   final parking = _parkingController.text;
                   final highway = _highwayController.text;
-                  fetchData(from, to, number, parking, highway);
+                  fetchData(from, to, number, parking, highway, viaList);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ResultPage()),
