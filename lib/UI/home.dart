@@ -1,11 +1,63 @@
 import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
+import 'package:drivepay/config/api_key.dart';
 import "package:flutter/material.dart";
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+final String apiKey = ApiKeys.api_key;
+void fetchData(
+  String from,
+  String to,
+  String number,
+  String? parking,
+  String? highway,
+  List<String> viaList,
+) async {
+  // 経由地をパイプ区切りで結合
+  final String viaString = viaList.join('|');
+  final String waypointsParam =
+      viaString.isNotEmpty ? '&waypoints=$viaString' : '';
+
+  final Uri uri = Uri.parse(
+    "https://maps.googleapis.com/maps/api/directions/json"
+    "?origin=${Uri.encodeComponent(from)}"
+    "&destination=${Uri.encodeComponent(to)}"
+    "$waypointsParam"
+    "&key=$apiKey",
+  );
+
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+
+    // すべての legs の距離を合算
+    double totalDistanceMeters = 0;
+    for (var leg in data['routes'][0]['legs']) {
+      totalDistanceMeters += leg['distance']['value'];
+    }
+
+    final distanceKm = totalDistanceMeters / 1000.0;
+
+    final parkingFee = int.tryParse(parking ?? '') ?? 0;
+    final highwayFee = int.tryParse(highway ?? '') ?? 0;
+    final sumFare = distanceKm * 15 + parkingFee + highwayFee;
+    final perPersonFee = sumFare / int.parse(number);
+
+    print(
+      "✅ 合計料金（円）: ${sumFare.toStringAsFixed(1)}\n"
+      "一人当たりの料金: ${perPersonFee.toStringAsFixed(1)}\n"
+      "距離（キロメートル）: ${distanceKm.toStringAsFixed(1)}",
+    );
+  } else {
+    print("❌ エラー: ${response.statusCode}");
+  }
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -14,6 +66,8 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _parkingController = TextEditingController();
+  final TextEditingController _highwayController = TextEditingController();
 
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
@@ -52,7 +106,7 @@ class _HomePageState extends State<HomePage> {
             InputText(
               label: '出発地',
               hintText: '駅、バス停、住所、施設',
-              width: 270,
+              width: 250,
               controller: _fromController,
             ),
             const SizedBox(height: 16),
@@ -67,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                   InputText(
                     label: '経由${index + 1}',
                     hintText: '駅、バス停、サービスエリア',
-                    width: 270,
+                    width: 250,
                     controller: controller,
                   ),
                   const SizedBox(height: 8),
@@ -95,7 +149,7 @@ class _HomePageState extends State<HomePage> {
             InputText(
               label: '到着地',
               hintText: '駅、バス停、住所、施設',
-              width: 270,
+              width: 250,
               controller: _toController,
             ),
             const SizedBox(height: 16),
@@ -106,7 +160,10 @@ class _HomePageState extends State<HomePage> {
               controller: _numberController,
             ),
             const SizedBox(height: 20),
-            InputConditions(),
+            InputConditions(
+              parkingController: _parkingController,
+              highwayController: _highwayController,
+            ),
             const SizedBox(height: 50),
             Align(
               alignment: Alignment.center,
@@ -117,11 +174,47 @@ class _HomePageState extends State<HomePage> {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () {
-                  // TODO: 最終的にこれらの値をResultPageに渡す
+                  // バリデーションチェック
+                  String? errorMessage;
+                  
+                  // 出発地と到着地のチェック
+                  if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                    errorMessage = '出発地と到着地を入力してください';
+                  }
+                  
+                  // 乗車人数の数値チェック
+                  else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    errorMessage = '乗車人数は数値で入力してください';
+                  }
+                  
+                  // 駐車場代と高速代の数値チェック（入力されている場合のみ）
+                  else if (_parkingController.text.isNotEmpty && 
+                           !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
+                    errorMessage = '駐車場代は数値で入力してください';
+                  }
+                  else if (_highwayController.text.isNotEmpty && 
+                           !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
+                    errorMessage = '高速代は数値で入力してください';
+                  }
+
+                  if (errorMessage != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(errorMessage),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  // バリデーション成功時の処理
                   final from = _fromController.text;
                   final viaList = _viaControllers.map((c) => c.text).toList();
                   final to = _toController.text;
-
+                  final number = _numberController.text;
+                  final parking = _parkingController.text;
+                  final highway = _highwayController.text;
+                  fetchData(from, to, number, parking, highway, viaList);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ResultPage(perPersonAmount: 1200,

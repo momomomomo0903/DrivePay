@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class InputConditions extends StatelessWidget {
-  const InputConditions({super.key});
+  final TextEditingController? parkingController;
+  final TextEditingController? highwayController;
+
+  const InputConditions({
+    super.key,
+    this.parkingController,
+    this.highwayController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,86 +28,64 @@ class InputConditions extends StatelessWidget {
             alignment: Alignment.center,
             child: const Text('条件', style: TextStyle(color: Colors.white)),
           ),
-
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 100,
-                    height: 40,
-                    color: Color(0xFF45C4B0),
-                    padding: const EdgeInsets.all(8),
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      '〇 駐車場代',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  Container(
-                    width: 150,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF6FFFE),
-                      border: Border(
-                        bottom: BorderSide(color: Color(0xFF439A8C), width: 2),
-                        left: BorderSide(color: Color(0xFF439A8C), width: 2),
-                      ),
-                    ),
-                    child: const TextField(
-                      cursorColor: Color(0xFF45C4B0),
-                      decoration: InputDecoration(
-                        hintText: '数値を入力',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(bottom: 10, left: 10),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              Row(
-                children: [
-                  Container(
-                    width: 100,
-                    height: 40,
-                    color: Color(0xFF45C4B0),
-                    padding: const EdgeInsets.all(8),
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      '〇 高速代',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  Container(
-                    width: 150,
-                    height: 40,
-                    alignment: Alignment.centerRight,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF6FFFE),
-                      border: Border(
-                        left: BorderSide(color: Color(0xFF439A8C), width: 2),
-                      ),
-                    ),
-                    child: const TextField(
-                      cursorColor: Color(0xFF45C4B0),
-                      decoration: InputDecoration(
-                        hintText: '数値を入力',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(bottom: 10, left: 10),
-                      ),
-                    ),
-                  ),
-                ],
+              _buildConditionRow('〇 駐車場代', parkingController),
+              _buildConditionRow(
+                '〇 高速代',
+                highwayController,
+                showBottomBorder: false,
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildConditionRow(
+    String label,
+    TextEditingController? controller, {
+    bool showBottomBorder = true,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 100,
+          height: 40,
+          color: Color(0xFF45C4B0),
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.centerLeft,
+          child: Text(label, style: const TextStyle(color: Colors.white)),
+        ),
+        Container(
+          width: 150,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Color(0xFFF6FFFE),
+            border: Border(
+              left: BorderSide(color: Color(0xFF439A8C), width: 2),
+              bottom:
+                  showBottomBorder
+                      ? BorderSide(color: Color(0xFF439A8C), width: 2)
+                      : BorderSide.none,
+            ),
+          ),
+          child: TextField(
+            controller: controller,
+            cursorColor: Color(0xFF45C4B0),
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: '数値を入力',
+              hintStyle: TextStyle(color: Colors.grey),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(bottom: 10, left: 10),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
