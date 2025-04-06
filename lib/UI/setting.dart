@@ -1,6 +1,9 @@
+import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
 import 'package:drivepay/UI/component/webViewPage.dart';
+import 'package:drivepay/UI/auth/auth_login.dart';
+
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
 
@@ -12,9 +15,7 @@ class SettingPage extends StatelessWidget {
           width: double.infinity,
           margin: EdgeInsets.zero,
           padding: const EdgeInsets.only(top: 10, bottom: 20),
-          decoration: const BoxDecoration(
-            color: Color(0xFFDCFFF9),
-          ),
+          decoration: const BoxDecoration(color: Color(0xFFDCFFF9)),
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -46,16 +47,31 @@ class SettingPage extends StatelessWidget {
                     color: const Color(0xFF45C4B0),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: Text(
-                        '名前:ムンチャクッパス\nメールアドレス:munchaku@gmail.com',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        children: [
+                          const Text(
+                            '名前:ムンチャクッパス\nメールアドレス:munchaku@gmail.com',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AuthLoginPage(),
+                                ),
+                              );
+                            },
+                            child: const Text("ログイン"),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -107,41 +123,37 @@ class SettingPage extends StatelessWidget {
   void _navigateToHistory(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const Firstpage(),
-      ),
+      MaterialPageRoute(builder: (context) => const Firstpage()),
     );
   }
 
   void _navigateToInfomation(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const Firstpage(),
-      ),
+      MaterialPageRoute(builder: (context) => const Firstpage()),
     );
   }
 
   void _navigateToCreateGroup(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const Firstpage(),
-      ),
+      MaterialPageRoute(builder: (context) => const Firstpage()),
     );
   }
 
-void _navigateToContact(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const WebViewPage(
-        title: 'お問い合わせフォーム',
-        url: 'https://docs.google.com/forms/d/e/1FAIpQLSe1UBYrgiDekPvA2RMLPVZvsrQwQdJ0j98iNiNZDyy1m6Z3ZQ/viewform?usp=header',
+  void _navigateToContact(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => const WebViewPage(
+              title: 'お問い合わせフォーム',
+              url:
+                  'https://docs.google.com/forms/d/e/1FAIpQLSe1UBYrgiDekPvA2RMLPVZvsrQwQdJ0j98iNiNZDyy1m6Z3ZQ/viewform?usp=header',
+            ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildFeatureButton({
     required IconData icon,
@@ -158,11 +170,7 @@ void _navigateToContact(BuildContext context) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 32,
-              color: Colors.white,
-            ),
+            Icon(icon, size: 32, color: Colors.white),
             const SizedBox(height: 8),
             Text(
               label,
@@ -178,6 +186,3 @@ void _navigateToContact(BuildContext context) {
     );
   }
 }
-
-
-

@@ -45,3 +45,4 @@ app.*.map.json
 /android/app/release
 
 lib/config/api_key.dart
+lib/config/bundleID.dart
