@@ -28,8 +28,6 @@
 	<true/>
 	<key>MAPS_API_KEY</key>
 	<string>$(MAPS_API_KEY)</string>
-	<key>yourname</key>
-	<string>$(yourname)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>現在地を取得するために位置情報の使用を許可してください。</string>
 	<key>NSLocationAlwaysUsageDescription</key>
