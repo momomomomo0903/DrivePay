@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '998415778967',
     projectId: 'drivepay-0405',
     storageBucket: 'drivepay-0405.firebasestorage.app',
-    iosBundleId: 'com.${Bundleid.yourname}.drivepay',
+    iosBundleId: '${Bundleid.ID}',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
