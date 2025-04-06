@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_unnecessary_containers, sized_box_for_whitespace
 import "package:flutter/material.dart";
 import 'package:drivepay/UI/fotter_menu.dart';
 
