@@ -1,14 +1,25 @@
-import 'package:drivepay/UI/auth/auth_login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/UI/firstPage.dart';
 import 'package:drivepay/UI/component/webViewPage.dart';
+import 'package:drivepay/UI/auth/auth_status.dart';
 import 'package:drivepay/UI/auth/auth_login.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SettingPage extends StatelessWidget {
+class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
 
   @override
+  ConsumerState<SettingPage> createState() => _SettingPage();
+}
+
+class _SettingPage extends ConsumerState<SettingPage> {
+  @override
   Widget build(BuildContext context) {
+    final isLogin = ref.watch(isLoginProvider);
+    final UserName = ref.watch(userNameProvider);
+    final eMail = ref.watch(eMailProvider);
     return Column(
       children: [
         Container(
@@ -50,27 +61,45 @@ class SettingPage extends StatelessWidget {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
-                      child: Row(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
-                            '名前:ムンチャクッパス\nメールアドレス:munchaku@gmail.com',
+                          Text(
+                            '名前:$UserName\nメールアドレス:$eMail',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AuthLoginPage(),
-                                ),
-                              );
-                            },
-                            child: const Text("ログイン"),
-                          ),
+                          !isLogin
+                              ? ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AuthLoginPage(),
+                                    ),
+                                  );
+                                },
+                                child: Text("ログイン"),
+                              )
+                              : ElevatedButton(
+                                onPressed: () {
+                                  ref.read(isLoginProvider.notifier).state =
+                                      false;
+                                  ref.read(userNameProvider.notifier).state =
+                                      "ゲスト";
+                                  ref.read(eMailProvider.notifier).state =
+                                      "ログインしてください";
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const MainScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text("ログアウト"),
+                              ),
                         ],
                       ),
                     ),
