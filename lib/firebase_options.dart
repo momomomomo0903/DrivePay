@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:drivepay/config/bundleID.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -64,7 +65,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '998415778967',
     projectId: 'drivepay-0405',
     storageBucket: 'drivepay-0405.firebasestorage.app',
-    iosBundleId: 'com.rikuto.drivepay',
+    iosBundleId: 'com.${Bundleid.yourname}.drivepay',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -85,5 +86,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'drivepay-0405.firebasestorage.app',
     measurementId: 'G-W0W67GY1Y1',
   );
-
 }
