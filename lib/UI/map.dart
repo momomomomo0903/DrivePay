@@ -279,7 +279,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             Positioned(top: 10, left: 0, right: 0, child: buildSearchArea()),
             Positioned(
               bottom: 70,
-              right: 16,
+              right: 16,                            
+              
               child: FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {
