@@ -280,6 +280,8 @@ class HomePageState extends State<HomePage> {
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    shape: const StadiumBorder(),
                     padding: const EdgeInsets.only(left: 70.0, right: 70.0),
                     backgroundColor: Color(0xFF45C4B0),
                     foregroundColor: Colors.white,

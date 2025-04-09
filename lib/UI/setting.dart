@@ -1,6 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/UI/firstPage.dart';
 import 'package:drivepay/UI/component/webViewPage.dart';
 import 'package:drivepay/UI/auth/auth_status.dart';
@@ -61,16 +60,20 @@ class _SettingPage extends ConsumerState<SettingPage> {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             '名前:$UserName\nメールアドレス:$eMail',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          SizedBox(height: 10),
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
@@ -85,17 +88,10 @@ class _SettingPage extends ConsumerState<SettingPage> {
                               )
                               : ElevatedButton(
                                 onPressed: () {
-                                  ref.read(isLoginProvider.notifier).state =
-                                      false;
-                                  ref.read(userNameProvider.notifier).state =
-                                      "ゲスト";
-                                  ref.read(eMailProvider.notifier).state =
-                                      "ログインしてください";
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const MainScreen(),
-                                    ),
+                                  AuthLogout.LogoutLogic(ref, context);
+
+                                  debugPrint(
+                                    'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
                                   );
                                 },
                                 child: Text("ログアウト"),
@@ -124,7 +120,10 @@ class _SettingPage extends ConsumerState<SettingPage> {
                 _buildFeatureButton(
                   icon: Icons.history,
                   label: 'ドライブ履歴',
-                  onTap: () => _navigateToHistory(context),
+                  onTap:
+                      isLogin
+                          ? () => _navigateToHistory(context)
+                          : () => _navigateToLogin(context),
                 ),
                 _buildFeatureButton(
                   icon: Icons.info_outline,
@@ -134,7 +133,10 @@ class _SettingPage extends ConsumerState<SettingPage> {
                 _buildFeatureButton(
                   icon: Icons.group_add,
                   label: 'グループ作成',
-                  onTap: () => _navigateToCreateGroup(context),
+                  onTap:
+                      isLogin
+                          ? () => _navigateToCreateGroup(context)
+                          : () => _navigateToLogin(context),
                 ),
                 _buildFeatureButton(
                   icon: Icons.mail_outline,
@@ -146,6 +148,91 @@ class _SettingPage extends ConsumerState<SettingPage> {
           ),
         ),
       ],
+    );
+  }
+
+  void _navigateToLogin(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    'ログインしてください',
+                    style: const TextStyle(
+                      color: Color(0xFF45C4B0),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  "こちらの機能はログインをしていただくとご利用できます。",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Color(0xFF45C4B0)),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 5,
+                        backgroundColor: Color(0xFF45C4B0),
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'キャンセル',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 5,
+                        backgroundColor: Color(0xFF45C4B0),
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AuthLoginPage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'ログイン',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
