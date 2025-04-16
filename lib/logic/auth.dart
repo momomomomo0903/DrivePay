@@ -1,7 +1,9 @@
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, deprecated_member_use
+// ignore_for_file: non_constant_identifier_names, deprecated_member_use
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivepay/UI/auth/auth.dart';
 import 'package:drivepay/UI/auth/auth_status.dart';
 import 'package:drivepay/UI/fotter_menu.dart';
+import 'package:drivepay/logic/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthLogout {
   static Future<void> LogoutLogic(WidgetRef ref, BuildContext context) async {
+    DB.TimeStampWrite(ref, "ログアウト");
     await FirebaseAuth.instance.signOut();
     ref.read(isLoginProvider.notifier).state = false;
     ref.read(isGoogleLoginProvider.notifier).state = false;
@@ -16,6 +19,7 @@ class AuthLogout {
     ref.read(userIdProvider.notifier).state = "ログインしてください";
     ref.read(userNameProvider.notifier).state = "ゲスト";
     ref.read(eMailProvider.notifier).state = "ログインしてください";
+    AuthUI.logout(context);
   }
 }
 
@@ -23,35 +27,37 @@ class AuthSignin {
   static Future<String?> SigninLogic(
     WidgetRef ref,
     BuildContext context,
-    String loginPassword,
+    String password,
   ) async {
-    final loginName = ref.watch(userNameProvider);
     final loginEmail = ref.watch(eMailProvider);
     try {
       final FirebaseAuth auth = FirebaseAuth.instance;
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: loginEmail,
-        password: loginPassword,
+        password: password,
       );
+      ref.read(userIdProvider.notifier).state = userCredential.user!.uid;
+      ref.read(isMailLoginProvider.notifier).state = true;
+
+      // firestoreに書き込み
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final userId = userCredential.user!.uid;
-      await firestore.collection('users').doc(userId).set({
-        'uid': userId.toString(),
-        'username': loginName.toString(),
-        'email': loginEmail.toString(),
+      await firestore.collection('users').doc(userCredential.user!.uid).set({
+        'uid': userCredential.user!.uid,
+        'username': ref.watch(userNameProvider),
+        'email': loginEmail,
         'mailLogin': true,
         'GoogleLogin': false,
-        'createdAt': FieldValue.serverTimestamp(),
+        'updateDate': FieldValue.serverTimestamp(),
       });
-      ref.read(userIdProvider.notifier).state = userId;
+
+      DB.TimeStampWrite(ref, 'サインイン');
       ref.read(isLoginProvider.notifier).state = true;
-      ref.read(isMailLoginProvider.notifier).state = true;
-      return null;
     } catch (e) {
       ref.read(userNameProvider.notifier).state = "ゲスト";
       ref.read(eMailProvider.notifier).state = "ログインしてください";
       return e.toString();
     }
+    return null;
   }
 }
 
@@ -59,46 +65,22 @@ class AuthLogin {
   static Future<String?> LoginLogic(
     WidgetRef ref,
     BuildContext context,
-    String loginPassword,
+    String password,
   ) async {
     final loginEmail = ref.watch(eMailProvider);
     try {
-      // ref.watch(isMailLoginProvider);
-      // ref.watch(isGoogleLoginProvider);
       final FirebaseAuth auth = FirebaseAuth.instance;
       UserCredential userCred = await auth.signInWithEmailAndPassword(
         email: loginEmail,
-        password: loginPassword,
+        password: password,
       );
-
-      String? userId = userCred.user?.uid;
-      final loginUserSnapshot =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .get();
-      final loginUser = loginUserSnapshot.data()?['username'] ?? 'ゲスト';
-
-      // firestoreに書き込み
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      await firestore.collection('users').doc(userId).update({
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      ref.read(userNameProvider.notifier).state = loginUser;
+      ref.read(userIdProvider.notifier).state = userCred.user!.uid.toString();
+      DB.dataBaseWatch(ref);
+      DB.TimeStampWrite(ref, 'ログイン');
       ref.read(isLoginProvider.notifier).state = true;
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
       ref.read(eMailProvider.notifier).state = "ログインしてください";
-      ref.read(isMailLoginProvider.notifier).state = false;
-      ref.read(isGoogleLoginProvider.notifier).state = false;
-      if (e.code == 'user-not-found') {
-        return 'ユーザーが見つかりません。';
-      } else if (e.code == 'wrong-password') {
-        return 'パスワードが間違っています。';
-      } else if (e.code == 'invalid-email') {
-        return 'メールアドレスの形式が正しくありません。';
-      } else {
-        return e.toString();
-      }
+      return e.toString();
     }
     return null;
   }
@@ -116,327 +98,71 @@ class GoogleSignin {
       );
       await googleSignIn.signOut();
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
       if (googleUser == null) return;
 
       // メールアドレスに紐づくサインイン方法を取得
       final String email = googleUser.email;
-      final List<String> signInMethods = await FirebaseAuth.instance
+      final signInMethods = await FirebaseAuth.instance
           .fetchSignInMethodsForEmail(email);
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+      final loginUser = FirebaseAuth.instance.currentUser;
 
-      final loginName = ref.watch(userNameProvider);
-
+      // TODO:Google認証とメール+パスワード認証のリンク
       if (signInMethods.contains('password')) {
-        // メール＋パスワードで登録
-        final loginUser = FirebaseAuth.instance.currentUser;
-        if (!(loginUser != null && loginUser.email == email)) {
-          // ログインしていない場合のログインロジック
-          _login(ref, context, email);
+        // すでにメール+パスワードで登録済みのユーザー
+        if (loginUser == null) {
+          // ユーザーにログインを促すダイアログを表示し、その後Googleとリンク
+          ref.read(eMailProvider.notifier).state = email;
+          AuthUI.popLogin(ref, context, email);
+          return;
         } else {
-          AddAuthRoute.MailToGoogle(ref);
+          // すでにログインしていればそのままリンク（想定外だが保険）
+          try {
+            AddAuthRoute.MailToGoogle(ref);
+            Navigator.pop(context);
+          } catch (e) {
+            debugPrint("リンクエラー:$e");
+          }
+          ref.read(isLoginProvider.notifier).state = true;
+          return;
         }
       } else if (signInMethods.contains('google.com')) {
-        // Firebaseでログイン
-        final UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithCredential(credential);
-
-        final User? user = userCredential.user;
-
-        ref.read(eMailProvider.notifier).state = user!.email ?? "";
-        ref.read(userNameProvider.notifier).state = loginName;
-        ref.read(userIdProvider.notifier).state = user.uid;
-        ref.read(isLoginProvider.notifier).state = true;
-        ref.read(isGoogleLoginProvider.notifier).state = true;
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+        // Googleでログイン
+        final UserCredential = await FirebaseAuth.instance.signInWithCredential(
+          credential,
         );
-      } else if (signInMethods.isEmpty) {
+
+        ref.read(userIdProvider.notifier).state =
+            UserCredential.user.toString();
+        await DB.dataBaseWatch(ref);
+        ref.read(isLoginProvider.notifier).state = true;
+        debugPrint('Googleでログイン');
+        Navigator.pop(context);
+        return;
+      } else {
         // 新規登録
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        // Firebaseでログイン
         final UserCredential userCredential = await FirebaseAuth.instance
             .signInWithCredential(credential);
-
-        final User? user = userCredential.user;
-        ref.read(eMailProvider.notifier).state = user!.email ?? "";
-        ref.read(userNameProvider.notifier).state = loginName;
-        ref.read(userIdProvider.notifier).state = user.uid;
-        ref.read(isLoginProvider.notifier).state = true;
+        final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
         ref.read(isGoogleLoginProvider.notifier).state = true;
-
-        if (userCredential.additionalUserInfo?.isNewUser == true) {
-          _getInfo(ref, context, credential);
-        } else {
-          Navigator.pop(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-          );
+        if (isNewUser) {
+          await AuthUI.getInfo(ref, context, credential);
         }
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-        );
+
+        await DB.dataBaseWrite(ref);
+        ref.read(isLoginProvider.notifier).state = true;
+        debugPrint('Google認証登録');
+        Navigator.pop(context);
+        return;
       }
     } catch (e) {
       debugPrint("$e");
     }
-  }
-
-  static void _getInfo(WidgetRef ref, BuildContext context, credential) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        final TextEditingController name = TextEditingController();
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Text(
-                    'ユーザー名',
-                    style: const TextStyle(
-                      color: Color(0xFF45C4B0),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                TextField(
-                  controller: name,
-                  decoration: InputDecoration(
-                    hintText: 'ユーザー名を入力してください',
-                    hintStyle: const TextStyle(
-                      color: Color(0xff45c4b0),
-                      fontWeight: FontWeight.bold,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                    ),
-                    enabledBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color(0xff45c4b0),
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 5,
-                    backgroundColor: Color(0xFF45C4B0),
-                    shape: const StadiumBorder(),
-                  ),
-                  onPressed: () async {
-                    final loginName = name.text.trim();
-                    ref.read(userNameProvider.notifier).state = loginName;
-                    await writeInfo(ref, credential);
-                    Navigator.pop(context);
-                    Navigator.pop(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
-                    );
-                  },
-                  child: Text(
-                    'ログイン',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void _login(WidgetRef ref, BuildContext context, String mail) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        final TextEditingController password = TextEditingController();
-        bool _isObscure = true;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: Text(
-                        'メールアドレスが登録されています。\nGoogleアカウントとリンクするためログインしてください。',
-                        style: const TextStyle(
-                          color: Color(0xFF45C4B0),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: Text(
-                        'メールアドレス : $mail',
-                        style: const TextStyle(
-                          color: Color(0xFF45C4B0),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "パスワード",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xff45c4b0),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    TextField(
-                      controller: password,
-                      decoration: InputDecoration(
-                        hintText: 'パスワードを入力してください',
-                        hintStyle: const TextStyle(
-                          color: Color(0xff45c4b0),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xff45c4b0),
-                            width: 2,
-                          ),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscure
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            size: 15,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isObscure = !_isObscure;
-                            });
-                          },
-                        ),
-                      ),
-                      obscureText: _isObscure,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: Color(0xFF45C4B0),
-                        shape: const StadiumBorder(),
-                      ),
-                      child: const Text(
-                        'ログイン',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (password.text.isNotEmpty) {
-                          final loginPassword = password.text.trim();
-                          final errorMessage = await AuthLogin.LoginLogic(
-                            ref,
-                            context,
-                            loginPassword,
-                          );
-                          debugPrint(
-                            'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
-                          );
-                          if (errorMessage != null) {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (_) => AlertDialog(
-                                    title: Text('ログインに失敗しました'),
-                                    content: Text(errorMessage),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                          } else {
-                            Navigator.pop(context);
-                          }
-                        } else {
-                          if (password.text.isNotEmpty) {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (_) => AlertDialog(
-                                    title: Text('ログインに失敗しました'),
-                                    content: Text('パスワードを入力してください'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
   }
 
   static Future<void> writeInfo(WidgetRef ref, credential) async {
@@ -444,20 +170,10 @@ class GoogleSignin {
       await FirebaseAuth.instance.signInWithCredential(credential);
       final FirebaseAuth auth = FirebaseAuth.instance;
       String? userId = auth.currentUser?.uid;
-      final loginName = ref.watch(userNameProvider);
-      // firestoreに書き込み
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final loginEmail = ref.watch(eMailProvider);
-      await firestore.collection('users').doc(userId).set({
-        'uid': userId.toString(),
-        'username': loginName.toString(),
-        'email': loginEmail.toString(),
-        'mailLogin': false,
-        'GoogleLogin': true,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
       ref.read(userIdProvider.notifier).state = userId.toString();
-      ref.read(eMailProvider.notifier).state = loginEmail.toString();
+      ref.read(isGoogleLoginProvider.notifier).state = true;
+      DB.dataBaseWrite(ref);
+      DB.TimeStampWrite(ref, 'Googleサインイン');
       ref.read(isLoginProvider.notifier).state = true;
     } catch (e) {
       debugPrint("$e");
@@ -479,15 +195,12 @@ class AddAuthRoute {
     // アカウントをリンク
     await user!.linkWithCredential(emailCredential);
 
-    // firestoreに書き込み
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    await firestore.collection('users').doc(user.uid).update({
-      'mailLogin': true,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    ref.read(isMailLoginProvider.notifier).state = true;
+    DB.dataBaseWrite(ref);
+    DB.TimeStampWrite(ref, 'メールアドレス認証を追加');
   }
 
-  static void MailToGoogle(WidgetRef ref) async {
+  static Future<void> MailToGoogle(WidgetRef ref) async {
     // 現在のログインユーザー（メール認証済）
     User? user = FirebaseAuth.instance.currentUser;
 
@@ -504,11 +217,8 @@ class AddAuthRoute {
     // アカウントをリンク
     await user!.linkWithCredential(googleCredential);
 
-    // firestoreに書き込み
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    await firestore.collection('users').doc(user.uid).update({
-      'GoogleLogin': true,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    ref.read(isGoogleLoginProvider.notifier).state = true;
+    DB.dataBaseWrite(ref);
+    DB.TimeStampWrite(ref, 'Google認証を追加');
   }
 }

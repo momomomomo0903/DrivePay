@@ -171,13 +171,12 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                       ),
                       onPressed: () async {
                         if (email.text.isNotEmpty || password.text.isNotEmpty) {
-                          final loginEmail = email.text.trim();
-                          final loginPassword = password.text.trim();
-                          ref.read(eMailProvider.notifier).state = loginEmail;
+                          ref.read(eMailProvider.notifier).state =
+                              email.text.trim();
                           final errorMessage = await AuthLogin.LoginLogic(
                             ref,
                             context,
-                            loginPassword,
+                            password.text.trim(),
                           );
                           debugPrint(
                             'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
@@ -199,7 +198,6 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                             );
                           } else {
                             Navigator.pop(
-                              // ignore: use_build_context_synchronously
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const MainScreen(),
@@ -207,7 +205,7 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                             );
                           }
                         } else {
-                          if (email.text.isNotEmpty) {
+                          if (email.text.isEmpty) {
                             showDialog(
                               context: context,
                               builder:
@@ -223,7 +221,7 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                                   ),
                             );
                           }
-                          if (password.text.isNotEmpty) {
+                          if (password.text.isEmpty) {
                             showDialog(
                               context: context,
                               builder:

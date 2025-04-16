@@ -165,15 +165,13 @@ class _AuthSigninPage extends ConsumerState<AuthSigninPage> {
                   if (name.text.isNotEmpty ||
                       email.text.isNotEmpty ||
                       password.text.isNotEmpty) {
-                    final loginName = name.text.trim();
-                    final loginEmail = email.text.trim();
-                    final loginPassword = password.text.trim();
-                    ref.read(userNameProvider.notifier).state = loginName;
-                    ref.read(eMailProvider.notifier).state = loginEmail;
+                    ref.read(userNameProvider.notifier).state =
+                        name.text.trim();
+                    ref.read(eMailProvider.notifier).state = email.text.trim();
                     final errorMessage = await AuthSignin.SigninLogic(
                       ref,
                       context,
-                      loginPassword,
+                      password.text.trim(),
                     );
                     if (errorMessage != null) {
                       showDialog(
@@ -202,55 +200,51 @@ class _AuthSigninPage extends ConsumerState<AuthSigninPage> {
                     debugPrint(
                       'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
                     );
-                  } else {
-                    if (name.text.isNotEmpty) {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => AlertDialog(
-                              title: Text('ログインに失敗しました'),
-                              content: Text('名前を入力してください'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    }
-                    if (email.text.isNotEmpty) {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => AlertDialog(
-                              title: Text('ログインに失敗しました'),
-                              content: Text('メールアドレスを入力してください'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    }
-                    if (password.text.isNotEmpty) {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => AlertDialog(
-                              title: Text('ログインに失敗しました'),
-                              content: Text('パスワードを入力してください'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    }
+                  } else if (name.text.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => AlertDialog(
+                            title: Text('ログインに失敗しました'),
+                            content: Text('名前を入力してください'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('OK'),
+                              ),
+                            ],
+                          ),
+                    );
+                  } else if (email.text.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => AlertDialog(
+                            title: Text('ログインに失敗しました'),
+                            content: Text('メールアドレスを入力してください'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('OK'),
+                              ),
+                            ],
+                          ),
+                    );
+                  } else if (password.text.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => AlertDialog(
+                            title: Text('ログインに失敗しました'),
+                            content: Text('パスワードを入力してください'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('OK'),
+                              ),
+                            ],
+                          ),
+                    );
                   }
                 },
               ),
