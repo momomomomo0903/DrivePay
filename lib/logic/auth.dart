@@ -2,7 +2,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivepay/UI/auth/auth.dart';
 import 'package:drivepay/UI/auth/auth_status.dart';
-import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/logic/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -39,16 +38,7 @@ class AuthSignin {
       ref.read(userIdProvider.notifier).state = userCredential.user!.uid;
       ref.read(isMailLoginProvider.notifier).state = true;
 
-      // firestoreに書き込み
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      await firestore.collection('users').doc(userCredential.user!.uid).set({
-        'uid': userCredential.user!.uid,
-        'username': ref.watch(userNameProvider),
-        'email': loginEmail,
-        'mailLogin': true,
-        'GoogleLogin': false,
-        'updateDate': FieldValue.serverTimestamp(),
-      });
+      DB.dataBaseSetWrite(ref);
 
       DB.TimeStampWrite(ref, 'サインイン');
       ref.read(isLoginProvider.notifier).state = true;
@@ -92,74 +82,53 @@ class GoogleSignin {
     BuildContext context,
   ) async {
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email'],
-        forceCodeForRefreshToken: true,
-      );
-      await googleSignIn.signOut();
+      // アカウント選択を強制
+      await GoogleSignIn().signOut();
+
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return;
 
-      // メールアドレスに紐づくサインイン方法を取得
-      final String email = googleUser.email;
-      final signInMethods = await FirebaseAuth.instance
-          .fetchSignInMethodsForEmail(email);
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-      final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      final loginUser = FirebaseAuth.instance.currentUser;
 
-      // TODO:Google認証とメール+パスワード認証のリンク
-      if (signInMethods.contains('password')) {
-        // すでにメール+パスワードで登録済みのユーザー
-        if (loginUser == null) {
-          // ユーザーにログインを促すダイアログを表示し、その後Googleとリンク
-          ref.read(eMailProvider.notifier).state = email;
-          AuthUI.popLogin(ref, context, email);
-          return;
-        } else {
-          // すでにログインしていればそのままリンク（想定外だが保険）
-          try {
-            AddAuthRoute.MailToGoogle(ref);
-            Navigator.pop(context);
-          } catch (e) {
-            debugPrint("リンクエラー:$e");
-          }
-          ref.read(isLoginProvider.notifier).state = true;
-          return;
-        }
-      } else if (signInMethods.contains('google.com')) {
-        // Googleでログイン
-        final UserCredential = await FirebaseAuth.instance.signInWithCredential(
-          credential,
-        );
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final email = googleUser.email;
 
-        ref.read(userIdProvider.notifier).state =
-            UserCredential.user.toString();
-        await DB.dataBaseWatch(ref);
-        ref.read(isLoginProvider.notifier).state = true;
-        debugPrint('Googleでログイン');
-        Navigator.pop(context);
-        return;
-      } else {
-        // 新規登録
-        final UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithCredential(credential);
-        final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
-        ref.read(isGoogleLoginProvider.notifier).state = true;
-        if (isNewUser) {
-          await AuthUI.getInfo(ref, context, credential);
-        }
-
-        await DB.dataBaseWrite(ref);
-        ref.read(isLoginProvider.notifier).state = true;
-        debugPrint('Google認証登録');
-        Navigator.pop(context);
+      final methods = await auth.fetchSignInMethodsForEmail(email);
+      if (methods.contains('password')) {
+        ref.read(eMailProvider.notifier).state = email;
+        await AuthUI.popLogin(ref, context, email);
         return;
       }
+
+      UserCredential userCred = await auth.signInWithCredential(credential);
+      final user = userCred.user!;
+      final uid = user.uid;
+
+      ref.read(userIdProvider.notifier).state = uid;
+      ref.read(eMailProvider.notifier).state = email;
+      ref.read(isGoogleLoginProvider.notifier).state = true;
+
+      // Firestoreユーザーが存在するか確認
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (!userDoc.exists) {
+        // ユーザー名入力 → Firestore登録 (新規)
+        await AuthUI.getInfo(ref, context);
+      } else {
+        // 既存ユーザー → Firestore更新
+        await DB.dataBaseWatch(ref);
+        await DB.dataBaseUpdateWrite(ref);
+        await DB.TimeStampWrite(ref, 'Googleログイン');
+        Navigator.pop(context);
+      }
+      ref.read(isLoginProvider.notifier).state = true;
     } catch (e) {
       debugPrint("$e");
     }
@@ -172,7 +141,7 @@ class GoogleSignin {
       String? userId = auth.currentUser?.uid;
       ref.read(userIdProvider.notifier).state = userId.toString();
       ref.read(isGoogleLoginProvider.notifier).state = true;
-      DB.dataBaseWrite(ref);
+      DB.dataBaseUpdateWrite(ref);
       DB.TimeStampWrite(ref, 'Googleサインイン');
       ref.read(isLoginProvider.notifier).state = true;
     } catch (e) {
@@ -196,7 +165,7 @@ class AddAuthRoute {
     await user!.linkWithCredential(emailCredential);
 
     ref.read(isMailLoginProvider.notifier).state = true;
-    DB.dataBaseWrite(ref);
+    DB.dataBaseUpdateWrite(ref);
     DB.TimeStampWrite(ref, 'メールアドレス認証を追加');
   }
 
@@ -218,7 +187,7 @@ class AddAuthRoute {
     await user!.linkWithCredential(googleCredential);
 
     ref.read(isGoogleLoginProvider.notifier).state = true;
-    DB.dataBaseWrite(ref);
+    DB.dataBaseUpdateWrite(ref);
     DB.TimeStampWrite(ref, 'Google認証を追加');
   }
 }

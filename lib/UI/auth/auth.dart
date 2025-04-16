@@ -1,15 +1,12 @@
 // ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 import 'package:drivepay/UI/auth/auth_status.dart';
 import 'package:drivepay/logic/auth.dart';
+import 'package:drivepay/logic/firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthUI {
-  static Future<void> getInfo(
-    WidgetRef ref,
-    BuildContext context,
-    credential,
-  ) async {
+  static Future<void> getInfo(WidgetRef ref, BuildContext context) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -66,8 +63,31 @@ class AuthUI {
                   ),
                   onPressed: () async {
                     final loginName = name.text.trim();
+
+                    if (loginName.isEmpty) {
+                      // ユーザー名未入力チェック
+                      showDialog(
+                        context: context,
+                        builder:
+                            (_) => AlertDialog(
+                              title: Text('ユーザー名が未入力です'),
+                              content: Text('ユーザー名を入力してください'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                      );
+                      return;
+                    }
+
                     ref.read(userNameProvider.notifier).state = loginName;
-                    await GoogleSignin.writeInfo(ref, credential);
+                    await DB.dataBaseSetWrite(ref);
+
+                    await DB.TimeStampWrite(ref, 'Googleサインイン');
+                    Navigator.pop(context);
                     Navigator.pop(context);
                   },
                   child: Text(

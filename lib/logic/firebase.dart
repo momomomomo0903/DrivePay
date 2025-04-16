@@ -6,7 +6,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DB {
-  static Future<void> dataBaseWrite(WidgetRef ref) async {
+  static Future<void> dataBaseSetWrite(WidgetRef ref) async {
+    try {
+      final name = ref.watch(userNameProvider);
+      final uid = ref.watch(userIdProvider);
+      final mail = ref.watch(eMailProvider);
+      final mailLogin = ref.watch(isMailLoginProvider);
+      final GoogleLogin = ref.watch(isGoogleLoginProvider);
+
+      if (uid == null || uid == "ログインしてください" || uid == "Null") {
+        debugPrint("無効なUIDなので書き込みをスキップしました");
+        return;
+      }
+      // firestoreに書き込み
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      await firestore.collection('users').doc(uid).set({
+        'uid': uid,
+        'username': name,
+        'email': mail,
+        'mailLogin': mailLogin,
+        'GoogleLogin': GoogleLogin,
+        'updateDate': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint("書き込みができませんでした。");
+    }
+  }
+
+  static Future<void> dataBaseUpdateWrite(WidgetRef ref) async {
     try {
       final name = ref.watch(userNameProvider);
       final uid = ref.watch(userIdProvider);
