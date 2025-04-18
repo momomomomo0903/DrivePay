@@ -73,7 +73,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 12),
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
