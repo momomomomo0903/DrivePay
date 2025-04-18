@@ -89,7 +89,7 @@
 //               ),
 //               SizedBox(height: 15),
 //               Text(
-//                 "ユーザー名",
+//                 "名前",
 //                 style: TextStyle(
 //                   fontSize: 20,
 //                   color: Color(0xff45c4b0),
@@ -100,7 +100,7 @@
 //               TextField(
 //                 controller: name,
 //                 decoration: InputDecoration(
-//                   hintText: 'ユーザー名を入力してください',
+//                   hintText: '名前を入力してください',
 //                   hintStyle: const TextStyle(
 //                     color: Color(0xff45c4b0),
 //                     fontWeight: FontWeight.bold,

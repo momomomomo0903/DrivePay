@@ -27,7 +27,7 @@ class AuthUI {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
                   child: Text(
-                    'ユーザー名',
+                    '名前',
                     style: const TextStyle(
                       color: Color(0xFF45C4B0),
                       fontSize: 18,
@@ -38,7 +38,7 @@ class AuthUI {
                 TextField(
                   controller: name,
                   decoration: InputDecoration(
-                    hintText: 'ユーザー名を入力してください',
+                    hintText: '名前を入力してください',
                     hintStyle: const TextStyle(
                       color: Color(0xff45c4b0),
                       fontWeight: FontWeight.bold,
@@ -65,13 +65,13 @@ class AuthUI {
                     final loginName = name.text.trim();
 
                     if (loginName.isEmpty) {
-                      // ユーザー名未入力チェック
+                      // 名前未入力チェック
                       showDialog(
                         context: context,
                         builder:
                             (_) => AlertDialog(
-                              title: Text('ユーザー名が未入力です'),
-                              content: Text('ユーザー名を入力してください'),
+                              title: Text('名前が未入力です'),
+                              content: Text('名前を入力してください'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
