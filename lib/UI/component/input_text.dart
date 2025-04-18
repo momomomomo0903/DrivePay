@@ -29,18 +29,20 @@ class InputText extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 50,
+              width: 80,
               height: 40,
               color: Color(0xFF45C4B0),
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
-              child: icon != null
-                ? Icon(icon, color: Colors.white, size: 24)
-                : Text(
-                    label!,
-                    style: const TextStyle(color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
+              child: Center(
+                child: icon != null
+                  ? Icon(icon, color: Colors.white, size: 24)
+                  : Text(
+                      label!,
+                      style: const TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+              ),
             ),
             Expanded(
               child: Container(
