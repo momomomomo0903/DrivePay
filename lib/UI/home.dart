@@ -310,11 +310,17 @@ class HomePageState extends State<HomePage> {
                         _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
                     }
+                    // 乗車人数のチェック
+                    else if (_numberController.text.isEmpty) {
+                      errorMessage = '乗車人数を入力してください';
+                    }
                     // 乗車人数の数値チェック
-                    else if (!RegExp(
-                      r'^\d+$',
-                    ).hasMatch(_numberController.text)) {
+                    else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
+                    }
+                    // 乗車人数の範囲チェック
+                    else if (int.parse(_numberController.text) <= 0) {
+                      errorMessage = '乗車人数は1人以上で入力してください';
                     }
                     // 駐車場代と高速代の数値チェック（入力されている場合のみ）
                     else if (_parkingController.text.isNotEmpty &&
