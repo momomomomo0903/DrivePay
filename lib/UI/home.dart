@@ -186,8 +186,22 @@ class HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.location_on, color: Color(0xFFdf5656), size: 24),
-              const Text('現在地から出発', style: TextStyle(color: Color(0xFF45C4B0))),
+              GestureDetector(
+                onTap: getCurrentLocation,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Color(0xFFdf5656),
+                      size: 24,
+                    ),
+                    const Text(
+                      '現在地から出発',
+                      style: TextStyle(color: Color(0xFF45C4B0)),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 2),
               InputText(
                 label: '出発地',
@@ -195,6 +209,7 @@ class HomePageState extends State<HomePage> {
                 width: MediaQuery.of(context).size.width - 60,
                 controller: _fromController,
               ),
+              const SizedBox(height: 16),
 
               // 複数の経由地を表示
               ..._viaControllers.asMap().entries.map((entry) {
