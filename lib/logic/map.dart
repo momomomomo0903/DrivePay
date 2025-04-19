@@ -30,6 +30,15 @@ class MapLogic {
     mapController = controller;
   }
 
+  void _addDestinationMarker(LatLng position, String label) {
+    final marker = Marker(
+      markerId: MarkerId('destination'),
+      position: position,
+      infoWindow: InfoWindow(title: label),
+    );
+    updateMarkers({marker});
+  }
+
   // 緯度経度から住所を取得
   Future<String> getAddressFromLatLng(LatLng latLng) async {
     try {
@@ -238,8 +247,11 @@ class MapLogic {
   }
 
   // 目的地を検索
-  Future<void> searchNavigate(String address) async {
+  Future<void> searchNavigate(BuildContext context, String address) async {
     try {
+      updateMarkers({});
+      updatePolylines({});
+
       List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         final location = locations.first;
@@ -249,6 +261,8 @@ class MapLogic {
             CameraPosition(target: target, zoom: 16.0),
           ),
         );
+
+        _addDestinationMarker(target, address);
       }
     } catch (e) {
       debugPrint("検索エラー:$e");
@@ -262,6 +276,8 @@ class MapLogic {
     BuildContext context,
   ) async {
     try {
+      updateMarkers({});
+      updatePolylines({});
       List<Location> startLoca = await locationFromAddress(startAdd);
       List<Location> destinationLoca = await locationFromAddress(
         destinationAdd,
@@ -287,6 +303,11 @@ class MapLogic {
 
       final start = startLoca.first;
       final destination = destinationLoca.first;
+
+      _addDestinationMarker(
+        LatLng(destination.latitude, destination.longitude),
+        destinationAdd,
+      );
 
       final url = Uri.parse(
         'https://maps.googleapis.com/maps/api/directions/json'
@@ -392,6 +413,8 @@ class MapLogic {
   // 近くのガソスタを検索
   Future<void> searchNearbyGasStations(BuildContext context) async {
     if (_currentPosition == null) return;
+    updateMarkers({});
+    updatePolylines({});
 
     final lat = _currentPosition!.latitude;
     final lng = _currentPosition!.longitude;

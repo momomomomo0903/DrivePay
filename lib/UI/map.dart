@@ -80,7 +80,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             ),
           ),
           onSubmitted: (value) async {
-            await _mapLogic.searchNavigate(value);
+            await _mapLogic.searchNavigate(context, value);
 
             if (_mapLogic.currentPosition != null) {
               final LatLng address =
@@ -140,7 +140,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     TextField(
                       controller: _startController,
                       decoration: InputDecoration(
-                        hintText: '出発地を入力',
+                        hintText: '出発地を入力(空白で現在地)',
                         prefixIcon: const Icon(Icons.circle_outlined),
                         filled: true,
                         fillColor: Colors.grey[100],
@@ -279,8 +279,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             Positioned(top: 10, left: 0, right: 0, child: buildSearchArea()),
             Positioned(
               bottom: 70,
-              right: 16,                            
-              
+              right: 16,
+
               child: FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {

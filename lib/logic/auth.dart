@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, deprecated_member_use
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:drivepay/UI/auth/auth_status.dart';
+import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
