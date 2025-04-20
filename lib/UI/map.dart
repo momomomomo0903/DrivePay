@@ -1,16 +1,17 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:drivepay/logic/map.dart';
 
-class MapPage extends StatefulWidget {
+class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  ConsumerState<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+class _MapPageState extends ConsumerState<MapPage> {
   GoogleMapController? mapController;
   CameraPosition? _initialLocation;
   Set<Marker> _markers = {};
@@ -22,10 +23,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   // TODO:経由地の追加
   final TextEditingController _viaController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
-
-  @override
-  bool get wantKeepAlive => true;
-
   @override
   void initState() {
     super.initState();
@@ -254,8 +251,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     if (_initialLocation == null) {
       return const Center(child: CircularProgressIndicator());
     }

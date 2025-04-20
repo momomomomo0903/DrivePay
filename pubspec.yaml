@@ -22,6 +22,7 @@ dependencies:
   google_sign_in: ^6.2.2
   webview_flutter: ^4.10.0
   riverpod: ^2.6.1
+  connectivity_plus: ^6.0.3
 
 
 dev_dependencies:

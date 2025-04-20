@@ -140,7 +140,7 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                         GoogleSignin.signInWithGoogle(ref, context);
 
                         debugPrint(
-                          'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
+                          'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
                         );
                       },
                       child: Row(
@@ -180,7 +180,7 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                             loginPassword,
                           );
                           debugPrint(
-                            'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
+                            'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
                           );
                           if (errorMessage != null) {
                             showDialog(

@@ -11,8 +11,8 @@ class AuthLogout {
   static Future<void> LogoutLogic(WidgetRef ref, BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     ref.read(isLoginProvider.notifier).state = false;
-    ref.read(isGoogleLoginProvider.notifier).state = false;
-    ref.read(isMailLoginProvider.notifier).state = false;
+    // ref.read(isGoogleLoginProvider.notifier).state = false;
+    // ref.read(isMailLoginProvider.notifier).state = false;
     ref.read(userIdProvider.notifier).state = "ログインしてください";
     ref.read(userNameProvider.notifier).state = "ゲスト";
     ref.read(eMailProvider.notifier).state = "ログインしてください";
@@ -45,7 +45,7 @@ class AuthSignin {
       });
       ref.read(userIdProvider.notifier).state = userId;
       ref.read(isLoginProvider.notifier).state = true;
-      ref.read(isMailLoginProvider.notifier).state = true;
+      // ref.read(isMailLoginProvider.notifier).state = true;
       return null;
     } catch (e) {
       ref.read(userNameProvider.notifier).state = "ゲスト";
@@ -88,8 +88,8 @@ class AuthLogin {
       ref.read(isLoginProvider.notifier).state = true;
     } on FirebaseAuthException catch (e) {
       ref.read(eMailProvider.notifier).state = "ログインしてください";
-      ref.read(isMailLoginProvider.notifier).state = false;
-      ref.read(isGoogleLoginProvider.notifier).state = false;
+      // ref.read(isMailLoginProvider.notifier).state = false;
+      // ref.read(isGoogleLoginProvider.notifier).state = false;
       if (e.code == 'user-not-found') {
         return 'ユーザーが見つかりません。';
       } else if (e.code == 'wrong-password') {
@@ -153,7 +153,7 @@ class GoogleSignin {
         ref.read(userNameProvider.notifier).state = loginName;
         ref.read(userIdProvider.notifier).state = user.uid;
         ref.read(isLoginProvider.notifier).state = true;
-        ref.read(isGoogleLoginProvider.notifier).state = true;
+        // ref.read(isGoogleLoginProvider.notifier).state = true;
         Navigator.pop(
           context,
           MaterialPageRoute(builder: (context) => MainScreen()),
@@ -177,7 +177,7 @@ class GoogleSignin {
         ref.read(userNameProvider.notifier).state = loginName;
         ref.read(userIdProvider.notifier).state = user.uid;
         ref.read(isLoginProvider.notifier).state = true;
-        ref.read(isGoogleLoginProvider.notifier).state = true;
+        // ref.read(isGoogleLoginProvider.notifier).state = true;
 
         if (userCredential.additionalUserInfo?.isNewUser == true) {
           _getInfo(ref, context, credential);
@@ -388,7 +388,7 @@ class GoogleSignin {
                             loginPassword,
                           );
                           debugPrint(
-                            'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
+                            'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}',
                           );
                           if (errorMessage != null) {
                             showDialog(

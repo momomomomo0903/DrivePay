@@ -91,7 +91,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                                   AuthLogout.LogoutLogic(ref, context);
 
                                   debugPrint(
-                                    'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
+                                    'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
                                   );
                                 },
                                 child: Text("ログアウト"),

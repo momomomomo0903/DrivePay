@@ -200,7 +200,7 @@ class _AuthSigninPage extends ConsumerState<AuthSigninPage> {
                       );
                     }
                     debugPrint(
-                      'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
+                      'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
                     );
                   } else {
                     if (name.text.isNotEmpty) {
