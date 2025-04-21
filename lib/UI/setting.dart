@@ -5,7 +5,7 @@ import 'package:drivepay/UI/component/webViewPage.dart';
 import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:drivepay/UI/group.dart';
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
 
@@ -73,7 +73,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 12),
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
@@ -253,7 +253,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToCreateGroup(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Firstpage()),
+      MaterialPageRoute(builder: (context) => const GroupPage()),
     );
   }
 
