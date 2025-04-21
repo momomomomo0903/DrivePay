@@ -23,6 +23,8 @@ dependencies:
   webview_flutter: ^4.10.0
   riverpod: ^2.6.1
   url_launcher: ^6.2.5
+  firebase_storage: ^12.4.5
+
 
 dev_dependencies:
   flutter_test:

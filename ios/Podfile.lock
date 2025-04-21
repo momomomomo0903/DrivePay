@@ -1216,6 +1216,9 @@ PODS:
   - Firebase/Firestore (11.10.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 11.10.0)
+  - Firebase/Storage (11.10.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (~> 11.10.0)
   - firebase_app_check (0.3.2-5):
     - Firebase/CoreOnly (~> 11.10.0)
     - firebase_core
@@ -1227,6 +1230,10 @@ PODS:
     - Flutter
   - firebase_core (3.13.0):
     - Firebase/CoreOnly (= 11.10.0)
+    - Flutter
+  - firebase_storage (12.4.5):
+    - Firebase/Storage (= 11.10.0)
+    - firebase_core
     - Flutter
   - FirebaseAppCheck (11.10.0):
     - AppCheckCore (~> 11.0)
@@ -1274,6 +1281,13 @@ PODS:
     - leveldb-library (~> 1.22)
     - nanopb (~> 3.30910.0)
   - FirebaseSharedSwift (11.11.0)
+  - FirebaseStorage (11.10.0):
+    - FirebaseAppCheckInterop (~> 11.0)
+    - FirebaseAuthInterop (~> 11.0)
+    - FirebaseCore (~> 11.10.0)
+    - FirebaseCoreExtension (~> 11.10.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GTMSessionFetcher/Core (< 5.0, >= 3.4)
   - Flutter (1.0.0)
   - geocoding_ios (1.0.5):
     - Flutter
@@ -1440,6 +1454,7 @@ DEPENDENCIES:
   - firebase_app_check (from `.symlinks/plugins/firebase_app_check/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
@@ -1464,6 +1479,7 @@ SPEC REPOS:
     - FirebaseFirestore
     - FirebaseFirestoreInternal
     - FirebaseSharedSwift
+    - FirebaseStorage
     - Google-Maps-iOS-Utils
     - GoogleMaps
     - GoogleSignIn
@@ -1486,6 +1502,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_storage:
+    :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
   geocoding_ios:
@@ -1509,6 +1527,7 @@ SPEC CHECKSUMS:
   firebase_app_check: f24ffe14416429535e3ba82c181e2a04be2430e0
   firebase_auth: e37065f3f80ff90580c13ad0e5a48e3bb8d2ad77
   firebase_core: 432718558359a8c08762151b5f49bb0f093eb6e0
+  firebase_storage: 11a326ee2116e122192f7b960db6f17ea8c18681
   FirebaseAppCheck: 9687ebd909702469bc09d2d58008697b83f4ac27
   FirebaseAppCheckInterop: f23709c9ce92d810aa53ff4ce12ad3e666a3c7be
   FirebaseAuth: c4146bdfdc87329f9962babd24dae89373f49a32
@@ -1519,6 +1538,7 @@ SPEC CHECKSUMS:
   FirebaseFirestore: 3f1488ff7739cb3c5d10e572bc4e9fcd8e8cb4ac
   FirebaseFirestoreInternal: 97a2bb5f16951c77753c860d3519379702ab6f8a
   FirebaseSharedSwift: b1d32c3b29a911dc174bcf363f2f70bda9509d2f
+  FirebaseStorage: e83d1b9c8a5318d46ccfb2955f0d98095e0bf598
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   geocoding_ios: d7460f56e80e118d57678efe5c2cdc888739ff18
   geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd

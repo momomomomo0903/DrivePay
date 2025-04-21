@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 
 class InputText extends StatelessWidget {
-  final String label;
+  final String? label;
+  final IconData? icon;
   final String hintText;
   final double width;
   final TextEditingController controller;
+  final bool enabled;
 
   const InputText({
     super.key,
-    required this.label,
+    this.label,
+    this.icon,
     required this.hintText,
     required this.width,
     required this.controller,
-  });
+    this.enabled = true,
+  }) : assert(label != null || icon != null, 'Either label or icon must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,15 @@ class InputText extends StatelessWidget {
               color: Color(0xFF45C4B0),
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
-              child: Text(label, style: const TextStyle(color: Colors.white)),
+              child: Center(
+                child: icon != null
+                  ? Icon(icon, color: Colors.white, size: 24)
+                  : Text(
+                      label!,
+                      style: const TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+              ),
             ),
             Expanded(
               child: Container(
@@ -38,6 +50,7 @@ class InputText extends StatelessWidget {
                 color: Color(0xFFF6FFFE),
                 alignment: Alignment.center,
                 child: TextField(
+                  enabled: enabled,
                   cursorColor: Color(0xFF45C4B0),
                   controller: controller,
                   decoration: InputDecoration(
