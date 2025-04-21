@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +53,7 @@ class _AuthSigninPage extends ConsumerState<AuthSigninPage> {
                   ),
                 ],
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Text(
                   'サインインすると\nグループを作成できます',
@@ -192,7 +194,6 @@ class _AuthSigninPage extends ConsumerState<AuthSigninPage> {
                       );
                     } else {
                       Navigator.pop(
-                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                           builder: (context) => const MainScreen(),

@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:drivepay/UI/network.dart';
-import 'package:drivepay/logic/network.dart';
 import 'package:drivepay/state/map_status.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/home.dart';
@@ -29,21 +27,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     MapPage(),
     SettingPage(),
   ];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   isNetwork = ref.read(connectivityCheckProvider);
-  //   isNetworkConnected = ref.read(connectivityCheckProvider);
-
-  //   Timer.periodic(const Duration(seconds: 4), (timer) async {
-  //     isNetwork = await NetworkLogic().networkCheck();
-  //     setState(() {
-  //       isNetworkConnected = isNetwork;
-  //       ref.read(connectivityCheckProvider.notifier).state = isNetworkConnected;
-  //     });
-  //   });
-  // }
 
   _onItemTapped(int index) {
     setState(() {
@@ -93,6 +76,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             onTap: _onItemTapped,
           ),
         )
-        : NetworkUI().networkErrorUI();
+        : NetworkUI().networkErrorUI(context);
   }
 }

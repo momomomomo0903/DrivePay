@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:drivepay/UI/auth/auth_signin.dart';
 import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/logic/auth.dart';
@@ -52,7 +53,7 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                   ),
                 ],
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Text(
                   'ログインすると\nグループを作成できます',
@@ -199,7 +200,6 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                             );
                           } else {
                             Navigator.pop(
-                              // ignore: use_build_context_synchronously
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const MainScreen(),
@@ -249,7 +249,6 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
               TextButton(
                 onPressed: () {
                   Navigator.pushReplacement(
-                    // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AuthSigninPage(),

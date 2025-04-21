@@ -17,7 +17,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   @override
   Widget build(BuildContext context) {
     final isLogin = ref.watch(isLoginProvider);
-    final UserName = ref.watch(userNameProvider);
+    final userName = ref.watch(userNameProvider);
     final eMail = ref.watch(eMailProvider);
     return Column(
       children: [
@@ -65,7 +65,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '名前:$UserName\nメールアドレス:$eMail',
+                            '名前:$userName\nメールアドレス:$eMail',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,

@@ -285,7 +285,7 @@ class GoogleSignin {
       barrierDismissible: false,
       builder: (context) {
         final TextEditingController password = TextEditingController();
-        bool _isObscure = true;
+        bool isObscure = true;
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -351,19 +351,19 @@ class GoogleSignin {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isObscure
+                            isObscure
                                 ? Icons.visibility_off
                                 : Icons.visibility,
                             size: 15,
                           ),
                           onPressed: () {
                             setState(() {
-                              _isObscure = !_isObscure;
+                              isObscure = !isObscure;
                             });
                           },
                         ),
                       ),
-                      obscureText: _isObscure,
+                      obscureText: isObscure,
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
