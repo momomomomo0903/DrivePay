@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/createGroup.dart';
@@ -18,6 +20,7 @@ class _GroupPageState extends ConsumerState<GroupPage> {
   @override
   Widget build(BuildContext context) {
     final groupState = ref.watch(groupControllerProvider);
+    // ignore: unused_local_variable
     final controller = ref.read(groupControllerProvider.notifier);
 
     return Scaffold(

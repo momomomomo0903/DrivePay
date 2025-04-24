@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/auth/auth_status.dart';
@@ -16,7 +18,7 @@ class GroupCreationController extends ChangeNotifier {
   bool _isLoading = false;
 
   GroupCreationController(Ref ref) {
-    final name = ref.read(userNameProvider) ?? '';
+    final name = ref.read(userNameProvider);
     _memberManagement = MemberManagement(initialMemberName: name);
     _memberManagement.addListener(_onMemberChanged);
   }

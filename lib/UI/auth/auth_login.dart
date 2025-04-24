@@ -53,7 +53,7 @@ class _AuthLoginPage extends ConsumerState<AuthLoginPage> {
                   ),
                 ],
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Text(
                   'ログインすると\nグループを作成できます',
