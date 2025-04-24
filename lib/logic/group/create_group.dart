@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class CreateGroup {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -12,13 +13,13 @@ class CreateGroup {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        print('ユーザーがログインしていません');
+        debugPrint('ユーザーがログインしていません');
         throw Exception('ログインしていません');
       }
 
-      print('Creating group for user: ${user.uid}');
-      print('Group name: $groupName');
-      print('Members: $members');
+      debugPrint('Creating group for user: ${user.uid}');
+      debugPrint('Group name: $groupName');
+      debugPrint('Members: $members');
 
       if (groupName.isEmpty) {
         throw Exception('グループ名を入力してください');
@@ -29,7 +30,7 @@ class CreateGroup {
       }
 
       final groupId = DateTime.now().millisecondsSinceEpoch.toString();
-      print('Generated group ID: $groupId');
+      debugPrint('Generated group ID: $groupId');
       
       final groupData = {
         'groupId': groupId,
@@ -39,7 +40,7 @@ class CreateGroup {
         'createdAt': FieldValue.serverTimestamp(),
       };
 
-      print('Saving group data: $groupData');
+      debugPrint('Saving group data: $groupData');
 
       // ユーザーごとのサブコレクションに保存
       await _firestore
@@ -49,12 +50,12 @@ class CreateGroup {
           .doc(groupId)
           .set(groupData);
 
-      print('Group saved successfully');
+      debugPrint('Group saved successfully');
 
       return groupId;
     } catch (e) {
-      print('Error creating group: $e');
-      print('Error stack trace: ${StackTrace.current}');
+      debugPrint('Error creating group: $e');
+      debugPrint('Error stack trace: ${StackTrace.current}');
       throw Exception('グループの作成に失敗しました: ${e.toString()}');
     }
   }
@@ -66,12 +67,12 @@ class CreateGroup {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        print('ユーザーがログインしていません');
+        debugPrint('ユーザーがログインしていません');
         throw Exception('ログインしていません');
       }
 
-      print('Adding member to group: $groupId');
-      print('New member: $memberName');
+      debugPrint('Adding member to group: $groupId');
+      debugPrint('New member: $memberName');
 
       if (memberName.isEmpty) {
         throw Exception('メンバー名を入力してください');
@@ -85,29 +86,29 @@ class CreateGroup {
       final groupDoc = await groupRef.get();
 
       if (!groupDoc.exists) {
-        print('Group not found: $groupId');
+        debugPrint('Group not found: $groupId');
         throw Exception('グループが見つかりません');
       }
 
       final currentMembers = List<String>.from(groupDoc.data()?['members'] ?? []);
-      print('Current members: $currentMembers');
+      debugPrint('Current members: $currentMembers');
 
       if (currentMembers.contains(memberName)) {
         throw Exception('このメンバーは既に追加されています');
       }
 
       currentMembers.add(memberName);
-      print('Updated members: $currentMembers');
+      debugPrint('Updated members: $currentMembers');
       
       await groupRef.update({
         'members': currentMembers,
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      print('Member added successfully');
+      debugPrint('Member added successfully');
     } catch (e) {
-      print('Error adding member: $e');
-      print('Error stack trace: ${StackTrace.current}');
+      debugPrint('Error adding member: $e');
+      debugPrint('Error stack trace: ${StackTrace.current}');
       throw Exception('メンバーの追加に失敗しました: ${e.toString()}');
     }
   }

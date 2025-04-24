@@ -113,7 +113,7 @@ class _EditListDialogState extends State<EditListDialog> {
                     });
                   },
                 ),
-              )).toList(),
+              )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
