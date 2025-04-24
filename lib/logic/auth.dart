@@ -122,7 +122,7 @@ class GoogleSignin {
 
         if (!userDoc.exists) {
           // 初回 → ユーザー情報登録画面へ遷移
-          await AuthUI.getInfo(ref, context);
+          ;
         } else {
           // 既存ユーザー
           await DB.dataBaseWatch(ref);
