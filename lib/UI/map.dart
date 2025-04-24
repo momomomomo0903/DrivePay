@@ -21,6 +21,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _startController = TextEditingController();
   // TODO:経由地の追加
+  // ignore: unused_field
   final TextEditingController _viaController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
   @override

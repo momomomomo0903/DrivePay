@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
 import 'package:flutter/material.dart';
+import 'package:drivepay/services/paypay.dart';
 
 class ResultPage extends StatelessWidget {
   final int perPersonAmount;
@@ -28,13 +29,15 @@ class ResultPage extends StatelessWidget {
               width: double.infinity,
               height: 350,
               padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Color(0xFF4EC1B7),
-              ),
+              decoration: const BoxDecoration(color: Color(0xFF4EC1B7)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.directions_car, color: Colors.white, size: 30),
+                  const Icon(
+                    Icons.directions_car,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                   const SizedBox(height: 10),
                   const Text(
                     'Drive Pay',
@@ -61,12 +64,46 @@ class ResultPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 100),
-            Text('距離　　　　${distance.toStringAsFixed(1)} Km', style: const TextStyle(fontSize: 16)),
-            Text('一人　　　　${perPersonAmount}円 × ${peopleCount}人', style: const TextStyle(fontSize: 16)),
-            Text('合計　　　　${totalAmount}円', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 50),
+            Text(
+              '距離　　　　${distance.toStringAsFixed(1)} Km',
+              style: const TextStyle(fontSize: 16),
+            ),
+            Text(
+              '一人　　　　${perPersonAmount}円 × ${peopleCount}人',
+              style: const TextStyle(fontSize: 16),
+            ),
+            Text(
+              '合計　　　　${totalAmount}円',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 30),
+            // PayPayボタンを追加
+            ElevatedButton.icon(
+              onPressed: () {
+                PayPayService.launchPayPay(
+                  context: context,
+                  amount: perPersonAmount,
+                  message: 'DrivePay 相乗り代金',
+                );
+              },
+              icon: const Icon(Icons.payment, color: Colors.white),
+              label: const Text('PayPayで支払う'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF0033), // PayPayのブランドカラー
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
-  }}
+  }
+}

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GroupController extends StateNotifier<GroupState> {
@@ -36,7 +37,7 @@ class GroupController extends StateNotifier<GroupState> {
 
       state = state.copyWith(isLoading: false, groups: groups);
     } catch (e) {
-      print('Error loading groups: $e');
+      debugPrint('Error loading groups: $e');
       state = state.copyWith(isLoading: false, groups: []);
     }
   }
@@ -54,7 +55,7 @@ class GroupController extends StateNotifier<GroupState> {
           .delete();
       loadGroups();
     } catch (e) {
-      print('Error deleting group: $e');
+      debugPrint('Error deleting group: $e');
       rethrow;
     }
   }
@@ -75,7 +76,7 @@ class GroupController extends StateNotifier<GroupState> {
       });
       loadGroups();
     } catch (e) {
-      print('Error updating group: $e');
+      debugPrint('Error updating group: $e');
       rethrow;
     }
   }

@@ -1,3 +1,4 @@
+// ignore_for_file: file_names, use_build_context_synchronously, deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/component/input_text.dart';
@@ -90,7 +91,7 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
                 const SizedBox(height: 16),
                 TextButton.icon(
                   onPressed: () {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MemberManagement extends ChangeNotifier {
-  List<TextEditingController> _memberControllers = [];
+  final List<TextEditingController> _memberControllers = [];
   final String? initialMemberName;
 
   MemberManagement({this.initialMemberName}) {
