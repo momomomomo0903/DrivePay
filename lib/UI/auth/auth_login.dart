@@ -3,7 +3,7 @@
 import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drivepay/UI/auth/auth_status.dart';
+import 'package:drivepay/state/auth_status.dart';
 
 class AuthLoginPage extends ConsumerStatefulWidget {
   const AuthLoginPage({super.key});

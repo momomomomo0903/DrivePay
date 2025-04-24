@@ -1,5 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers
-import 'package:drivepay/UI/auth/auth_status.dart';
+import 'package:drivepay/state/auth_status.dart';
 // import 'package:drivepay/logic/auth.dart';
 import 'package:drivepay/logic/firebase.dart';
 import 'package:flutter/material.dart';

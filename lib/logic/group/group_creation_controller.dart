@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drivepay/UI/auth/auth_status.dart';
+import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/logic/group/create_group.dart';
 import 'package:drivepay/logic/group/member_management.dart';
 import 'package:drivepay/logic/group/error_handler.dart';

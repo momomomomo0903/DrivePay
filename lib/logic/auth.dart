@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, deprecated_member_use, use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivepay/UI/auth/auth.dart';
-import 'package:drivepay/UI/auth/auth_status.dart';
+import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/logic/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +13,8 @@ class AuthLogout {
     DB.TimeStampWrite(ref, "ログアウト");
     await FirebaseAuth.instance.signOut();
     ref.read(isLoginProvider.notifier).state = false;
-    ref.read(isGoogleLoginProvider.notifier).state = false;
-    ref.read(isMailLoginProvider.notifier).state = false;
+    // ref.read(isGoogleLoginProvider.notifier).state = false;
+    // ref.read(isMailLoginProvider.notifier).state = false;
     ref.read(userIdProvider.notifier).state = "ログインしてください";
     ref.read(userNameProvider.notifier).state = "ゲスト";
     ref.read(eMailProvider.notifier).state = "ログインしてください";
@@ -114,15 +114,15 @@ class GoogleSignin {
         final uid = user.uid;
 
         ref.read(userIdProvider.notifier).state = uid;
-        ref.read(eMailProvider.notifier).state = email;
-        ref.read(isGoogleLoginProvider.notifier).state = true;
+        // ref.read(eMailProvider.notifier).state = email;
+        // ref.read(isGoogleLoginProvider.notifier).state = true;
 
         final userDoc =
             await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
         if (!userDoc.exists) {
           // 初回 → ユーザー情報登録画面へ遷移
-          await AuthUI.getInfo(ref, context);
+          ;
         } else {
           // 既存ユーザー
           await DB.dataBaseWatch(ref);
@@ -156,7 +156,7 @@ class GoogleSignin {
       final FirebaseAuth auth = FirebaseAuth.instance;
       String? userId = auth.currentUser?.uid;
       ref.read(userIdProvider.notifier).state = userId.toString();
-      ref.read(isGoogleLoginProvider.notifier).state = true;
+      // ref.read(isGoogleLoginProvider.notifier).state = true;
       DB.dataBaseUpdateWrite(ref);
       DB.TimeStampWrite(ref, 'Googleサインイン');
       ref.read(isLoginProvider.notifier).state = true;
