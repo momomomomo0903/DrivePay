@@ -45,34 +45,49 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Color(0xFF45C4B0),
               ),
             ),
-            backgroundColor: Color(0xff45c4b0),
+            backgroundColor: Color(0xff45C4B0),
           ),
           body: IndexedStack(index: _selectedIndex, children: _pages),
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Color(0xff45C4B0),
+            iconSize: 30, 
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Icon(Icons.home_outlined),
+                ),
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.calculate_outlined),
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Icon(Icons.calculate_outlined),
+                ),
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.map_outlined),
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Icon(Icons.map_outlined),
+                ),
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.brightness_low_rounded),
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Icon(Icons.brightness_low_rounded),
+                ),
                 label: '',
               ),
             ],
             currentIndex: _selectedIndex,
-            selectedItemColor: Color(0xFF45C4B0),
-            unselectedItemColor: Color(0xFF45C4B0),
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white,
             onTap: _onItemTapped,
           ),
         )
