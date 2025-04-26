@@ -6,6 +6,7 @@ import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
+
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
 
@@ -77,14 +78,16 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AuthLoginPage(),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => AuthLoginPage(),
+                                  //   ),
+                                  // );
+                                  GoogleSignin.signInWithGoogle(ref, context);
                                 },
-                                child: Text("ログイン"),
+                                // child: Text("ログイン"),
+                                child: Text("Googleでログイン"),
                               )
                               : ElevatedButton(
                                 onPressed: () {
