@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:drivepay/UI/map.dart';
 import 'package:drivepay/UI/setting.dart';
-import 'package:drivepay/UI/result.dart';
+import 'package:drivepay/UI/driveLog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
-
 
   @override
   ConsumerState<MainScreen> createState() => _MainScreenState();
@@ -23,7 +22,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   final List<Widget> _pages = const [
     HomePage(),
-    ResultPage(perPersonAmount: 1200, peopleCount: 5, distance: 10.0),
+    DriveLogPage(),
     MapPage(),
     SettingPage(),
   ];
@@ -45,7 +44,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF45C4B0),
+                color: Colors.white,
               ),
             ),
             backgroundColor: Color(0xff45C4B0),
@@ -54,7 +53,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Color(0xff45C4B0),
-            iconSize: 30, 
+            iconSize: 30,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Padding(
@@ -66,7 +65,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: EdgeInsets.only(top: 12.0),
-                  child: Icon(Icons.calculate_outlined),
+                  child: Icon(Icons.groups_outlined),
                 ),
                 label: '',
               ),
