@@ -114,7 +114,7 @@ class GoogleSignin {
         final uid = user.uid;
 
         ref.read(userIdProvider.notifier).state = uid;
-        // ref.read(eMailProvider.notifier).state = email;
+        ref.read(eMailProvider.notifier).state = email;
         // ref.read(isGoogleLoginProvider.notifier).state = true;
 
         final userDoc =
@@ -122,7 +122,7 @@ class GoogleSignin {
 
         if (!userDoc.exists) {
           // 初回 → ユーザー情報登録画面へ遷移
-          ;
+          await AuthUI.getInfo(ref, context);
         } else {
           // 既存ユーザー
           await DB.dataBaseWatch(ref);
