@@ -146,7 +146,6 @@ class ResultPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 50),
-                      const SizedBox(height: 30),
                       // PayPayボタンを追加
                       ElevatedButton.icon(
                         onPressed: () {
@@ -172,6 +171,7 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 50),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 5,
