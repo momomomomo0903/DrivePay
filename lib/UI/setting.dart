@@ -2,10 +2,10 @@ import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
 import 'package:drivepay/UI/component/webViewPage.dart';
-import 'package:drivepay/UI/auth/auth_status.dart';
+import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:drivepay/UI/group.dart';
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
 
@@ -17,7 +17,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   @override
   Widget build(BuildContext context) {
     final isLogin = ref.watch(isLoginProvider);
-    final UserName = ref.watch(userNameProvider);
+    final userName = ref.watch(userNameProvider);
     final eMail = ref.watch(eMailProvider);
     return Column(
       children: [
@@ -65,7 +65,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '名前:$UserName\nメールアドレス:$eMail',
+                            '名前:$userName\nメールアドレス:$eMail',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
@@ -73,7 +73,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 12),
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
@@ -91,7 +91,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                                   AuthLogout.LogoutLogic(ref, context);
 
                                   debugPrint(
-                                    'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)},ismailLogin:${ref.watch(isMailLoginProvider)},isGoogleLogin:${ref.watch(isGoogleLoginProvider)}',
+                                    'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
                                   );
                                 },
                                 child: Text("ログアウト"),
@@ -253,7 +253,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToCreateGroup(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Firstpage()),
+      MaterialPageRoute(builder: (context) => const GroupPage()),
     );
   }
 

@@ -3,6 +3,7 @@
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:drivepay/services/paypay.dart';
 
 class ResultPage extends StatelessWidget {
   final int perPersonAmount;
@@ -145,6 +146,32 @@ class ResultPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 50),
+                      const SizedBox(height: 30),
+                      // PayPayボタンを追加
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          PayPayService.launchPayPay(
+                            context: context,
+                            amount: perPersonAmount,
+                            message: 'DrivePay 相乗り代金',
+                          );
+                        },
+                        icon: const Icon(Icons.payment, color: Colors.white),
+                        label: const Text('PayPayで支払う'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(
+                            0xFFFF0033,
+                          ), // PayPayのブランドカラー
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 5,

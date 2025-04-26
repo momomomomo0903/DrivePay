@@ -186,15 +186,30 @@ class HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.location_on, color: Color(0xFFdf5656), size: 24),
-              const Text('現在地から出発', style: TextStyle(color: Color(0xFF45C4B0))),
+              GestureDetector(
+                onTap: getCurrentLocation,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Color(0xFFdf5656),
+                      size: 24,
+                    ),
+                    const Text(
+                      '現在地から出発',
+                      style: TextStyle(color: Color(0xFF45C4B0)),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 2),
               InputText(
                 label: '出発地',
                 hintText: '駅、バス停、住所、施設',
-                width: MediaQuery.of(context).size.width - 60,
+                width: MediaQuery.of(context).size.width - 32,
                 controller: _fromController,
               ),
+              const SizedBox(height: 16),
 
               // 複数の経由地を表示
               ..._viaControllers.asMap().entries.map((entry) {
@@ -209,7 +224,7 @@ class HomePageState extends State<HomePage> {
                           child: InputText(
                             label: '経由${index + 1}',
                             hintText: '駅、サービスエリア',
-                            width: MediaQuery.of(context).size.width - 100,
+                            width: MediaQuery.of(context).size.width - 32,
                             controller: controller,
                           ),
                         ),
@@ -260,7 +275,7 @@ class HomePageState extends State<HomePage> {
               InputText(
                 label: '到着地',
                 hintText: '駅、バス停、住所、施設',
-                width: MediaQuery.of(context).size.width - 60,
+                width: MediaQuery.of(context).size.width - 32,
                 controller: _toController,
               ),
               const SizedBox(height: 16),
@@ -295,11 +310,17 @@ class HomePageState extends State<HomePage> {
                         _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
                     }
+                    // 乗車人数のチェック
+                    else if (_numberController.text.isEmpty) {
+                      errorMessage = '乗車人数を入力してください';
+                    }
                     // 乗車人数の数値チェック
-                    else if (!RegExp(
-                      r'^\d+$',
-                    ).hasMatch(_numberController.text)) {
+                    else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
+                    }
+                    // 乗車人数の範囲チェック
+                    else if (int.parse(_numberController.text) <= 0) {
+                      errorMessage = '乗車人数は1人以上で入力してください';
                     }
                     // 駐車場代と高速代の数値チェック（入力されている場合のみ）
                     else if (_parkingController.text.isNotEmpty &&
