@@ -1,3 +1,4 @@
+import 'package:drivepay/UI/driveLog.dart';
 import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
@@ -6,6 +7,7 @@ import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
+
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
 
@@ -123,7 +125,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                   onTap:
                       isLogin
                           ? () => _navigateToHistory(context)
-                          : () => _navigateToLogin(context),
+                          : () => _navigateToHistory(context),
                 ),
                 _buildFeatureButton(
                   icon: Icons.info_outline,
@@ -239,7 +241,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToHistory(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Firstpage()),
+      MaterialPageRoute(builder: (context) => const DriveLogPage()),
     );
   }
 
