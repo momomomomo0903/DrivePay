@@ -79,11 +79,9 @@ class ResultPage extends StatelessWidget {
               ),
               const SizedBox(height: 100),
               Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         width: 300,
