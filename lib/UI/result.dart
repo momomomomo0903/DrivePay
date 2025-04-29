@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
+import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,23 +37,33 @@ class ResultPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      '¥$perPersonAmount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 70,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      children: [
+                        Text(
+                          '一人あたり',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                          ),
+                        ),
+                        Text(
+                          '¥$perPersonAmount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
 
-                    // アイコン＋テキストを縦に並べる
                     Column(
                       children: [
                         IconButton(
                           icon: const Icon(Icons.link, color: Colors.white),
                           iconSize: 40,
-                          padding: EdgeInsets.zero, // アイコン周りの余白をなくす
-                          constraints: const BoxConstraints(), // 最小サイズ制限を解除
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
                           onPressed: () {
                             Clipboard.setData(
                               ClipboardData(text: perPersonAmount.toString()),
@@ -143,7 +154,7 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 0),
                       // PayPayボタンを追加
                       ElevatedButton.icon(
                         onPressed: () {
@@ -170,28 +181,7 @@ class ResultPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 50),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          shape: const StadiumBorder(),
-                          padding: const EdgeInsets.only(
-                            left: 70.0,
-                            right: 70.0,
-                          ),
-                          backgroundColor: const Color(0xFF45C4B0),
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        child: const Text('ホームに戻る'),
-                      ),
+                      ToHomepageButton(),
                     ],
                   ),
                 ],
