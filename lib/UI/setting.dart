@@ -79,14 +79,16 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AuthLoginPage(),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => AuthLoginPage(),
+                                  //   ),
+                                  // );
+                                  GoogleSignin.signInWithGoogle(ref, context);
                                 },
-                                child: Text("ログイン"),
+                                // child: Text("ログイン"),
+                                child: Text("Googleでログイン"),
                               )
                               : ElevatedButton(
                                 onPressed: () {
