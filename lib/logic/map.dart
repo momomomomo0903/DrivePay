@@ -14,9 +14,8 @@ class MapLogic {
   final Function(Set<Marker>) updateMarkers;
   final Function(String) updateStartAddress;
   final Function(Set<Polyline>) updatePolylines;
-  Position? _currentPosition;
+  Position? currentPosition;
   StreamSubscription<Position>? _positionStream;
-  Position? get currentPosition => _currentPosition;
 
   MapLogic({
     required this.updateMarkers,
@@ -88,7 +87,7 @@ class MapLogic {
         desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
 
-      _currentPosition = position;
+      currentPosition = position;
 
       setInitialLocation(
         CameraPosition(
@@ -412,12 +411,12 @@ class MapLogic {
 
   // 近くのガソスタを検索
   Future<void> searchNearbyGasStations(BuildContext context) async {
-    if (_currentPosition == null) return;
+    if (currentPosition == null) return;
     updateMarkers({});
     updatePolylines({});
 
-    final lat = _currentPosition!.latitude;
-    final lng = _currentPosition!.longitude;
+    final lat = currentPosition!.latitude;
+    final lng = currentPosition!.longitude;
 
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
