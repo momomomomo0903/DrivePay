@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io' show Platform;
 
 class PayPayService {
@@ -8,7 +8,10 @@ class PayPayService {
     required int amount,
     required String message,
   }) {
-    return 'paypay://send?amount=$amount&message=${Uri.encodeComponent(message)}';
+    final encodedMessage = Uri.encodeComponent(message);
+    final url = 'paypay://send?amount=$amount&message=$encodedMessage&currency=JPY';
+    print('Generated PayPay URL: $url');
+    return url;
   }
 
   // PayPayアプリを起動
@@ -22,13 +25,12 @@ class PayPayService {
     );
 
     try {
-      if (await url_launcher.canLaunchUrl(url)) {
-        await url_launcher.launchUrl(
-          url,
-          mode: url_launcher.LaunchMode.externalApplication,
-        );
-      } else {
-        // PayPayアプリがインストールされていない場合
+      print('Attempting to launch PayPay with URL: ${url.toString()}');
+      final canLaunch = await canLaunchUrl(url);
+      print('Can launch PayPay: $canLaunch');
+
+      if (!canLaunch) {
+        print('PayPay app not found');
         if (context.mounted) {
           showDialog(
             context: context,
@@ -40,14 +42,14 @@ class PayPayService {
                   TextButton(
                     child: const Text('App Storeを開く'),
                     onPressed: () async {
-                      // PayPayのストアページを開く
                       final storeUrl =
                           Platform.isIOS
                               ? 'https://apps.apple.com/jp/app/paypay/id1435783608'
                               : 'https://play.google.com/store/apps/details?id=jp.ne.paypay.android.app';
+                      print('Opening store URL: $storeUrl');
                       final Uri storeUri = Uri.parse(storeUrl);
-                      if (await url_launcher.canLaunchUrl(storeUri)) {
-                        await url_launcher.launchUrl(storeUri);
+                      if (await canLaunchUrl(storeUri)) {
+                        await launchUrl(storeUri);
                       }
                       if (context.mounted) {
                         Navigator.of(context).pop();
@@ -65,8 +67,17 @@ class PayPayService {
             },
           );
         }
+        return;
       }
+
+      print('Launching PayPay app...');
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+      print('PayPay app launched successfully');
     } catch (e) {
+      print('Error launching PayPay: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
