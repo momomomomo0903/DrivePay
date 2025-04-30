@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:drivepay/UI/explanation/fare_calculation_detail.dart';
+import 'package:drivepay/UI/explanation/payment_detail.dart';
+import 'package:drivepay/UI/explanation/map_detail.dart';
+import 'package:drivepay/UI/explanation/group_detail.dart';
+import 'package:drivepay/UI/explanation/history_detail.dart';
 
 class ExplanationPage extends StatelessWidget {
   const ExplanationPage({super.key});
@@ -22,35 +27,35 @@ class ExplanationPage extends StatelessWidget {
                 title: '1. 料金計算',
                 content: '出発地と目的地を入力し、人数を選択することで、一人あたりの料金を自動計算します。',
                 icon: Icons.calculate,
-                detailPage: 'fare_calculation',
+                detailPage: const FareCalculationDetailPage(),
               ),
               _buildSection(
                 context: context,
                 title: '2. 支払い',
                 content: 'PayPayを使用して、簡単に料金を支払うことができます。',
                 icon: Icons.payment,
-                detailPage: 'payment',
+                detailPage: const PaymentDetailPage(),
               ),
               _buildSection(
                 context: context,
                 title: '3. マップ機能',
                 content: '現在地周辺のガソリンスタンドを地図上で素早く見つけることができます。',
                 icon: Icons.map,
-                detailPage: 'map',
+                detailPage: const MapDetailPage(),
               ),
               _buildSection(
                 context: context,
                 title: '4. グループ作成',
                 content: 'ログインすることで、グループを作成し、メンバーと料金を共有できます。',
                 icon: Icons.group,
-                detailPage: 'group',
+                detailPage: const GroupDetailPage(),
               ),
               _buildSection(
                 context: context,
                 title: '5. ドライブ履歴',
                 content: '過去のドライブ履歴を確認することができます。',
                 icon: Icons.history,
-                detailPage: 'history',
+                detailPage: const HistoryDetailPage(),
               ),
             ],
           ),
@@ -64,10 +69,14 @@ class ExplanationPage extends StatelessWidget {
     required String title,
     required String content,
     required IconData icon,
-    required String detailPage,
+    required Widget detailPage,
   }) {
     return InkWell(
-      onTap: () => _navigateToDetail(context, detailPage),
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => detailPage),
+          ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 24),
         padding: const EdgeInsets.all(16),
@@ -119,24 +128,6 @@ class ExplanationPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _navigateToDetail(BuildContext context, String detailPage) {
-    // TODO: 各機能の詳細ページへの遷移を実装
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('$detailPage の詳細'),
-            content: const Text('詳細ページは現在開発中です。'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
     );
   }
 }
