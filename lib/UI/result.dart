@@ -127,7 +127,6 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 50),
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
@@ -138,16 +137,6 @@ class ResultPage extends StatelessWidget {
                             ShareIconButton(perPersonAmount: perPersonAmount),
                           ],
                         ),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        child: const Text('ホームに戻る'),
                       ),
                     ],
                   ),

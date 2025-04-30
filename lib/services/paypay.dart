@@ -9,7 +9,7 @@ class PayPayService {
     required String message,
   }) {
     final encodedMessage = Uri.encodeComponent(message);
-    final url = 'paypay://send?amount=$amount&message=$encodedMessage&currency=JPY';
+    final url = 'paypayjp://send?amount=$amount&message=$encodedMessage&currency=JPY';
     print('Generated PayPay URL: $url');
     return url;
   }
