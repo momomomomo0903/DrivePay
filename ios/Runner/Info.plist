@@ -54,6 +54,10 @@
 	<string>現在地を取得するために位置情報の使用を許可してください。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>現在地を取得するために位置情報の使用を許可してください。</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ルート検索のために現在地を使用します</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>ルート検索のために常に位置情報を使用します</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

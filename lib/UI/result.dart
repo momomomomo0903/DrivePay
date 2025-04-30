@@ -1,9 +1,10 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
+import 'package:drivepay/UI/component/result/share_icon.dart';
+import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:drivepay/services/paypay.dart';
 
 class ResultPage extends StatelessWidget {
   final int perPersonAmount;
@@ -30,46 +31,28 @@ class ResultPage extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 100, bottom: 150),
+                padding: const EdgeInsets.only(top: 150, bottom: 100),
                 decoration: const BoxDecoration(color: Color(0xFF45C4B0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      '¥$perPersonAmount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 70,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    // アイコン＋テキストを縦に並べる
                     Column(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.link, color: Colors.white),
-                          iconSize: 40,
-                          padding: EdgeInsets.zero, // アイコン周りの余白をなくす
-                          constraints: const BoxConstraints(), // 最小サイズ制限を解除
-                          onPressed: () {
-                            Clipboard.setData(
-                              ClipboardData(text: perPersonAmount.toString()),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('コピーしました')),
-                            );
-                          },
+                        Text(
+                          '一人あたり',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                          child: Text(
-                            '金額をコピー',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12, // 小さめに
-                            ),
+                        Text(
+                          '¥$perPersonAmount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 70,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -143,54 +126,17 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 50),
-                      // PayPayボタンを追加
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          PayPayService.launchPayPay(
-                            context: context,
-                            amount: perPersonAmount,
-                            message: 'DrivePay 相乗り代金',
-                          );
-                        },
-                        icon: const Icon(Icons.payment, color: Colors.white),
-                        label: const Text('PayPayで支払う'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFFFF0033,
-                          ), // PayPayのブランドカラー
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 40),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ToHomepageButton(),
+                            ShareIconButton(perPersonAmount: perPersonAmount),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 50),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          shape: const StadiumBorder(),
-                          padding: const EdgeInsets.only(
-                            left: 70.0,
-                            right: 70.0,
-                          ),
-                          backgroundColor: const Color(0xFF45C4B0),
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        child: const Text('ホームに戻る'),
                       ),
                     ],
                   ),

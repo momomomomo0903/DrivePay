@@ -2,7 +2,7 @@ import 'package:drivepay/UI/network.dart';
 import 'package:drivepay/state/map_status.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/home.dart';
-import 'package:drivepay/UI/map.dart';
+import 'package:drivepay/UI/map_UI.dart';
 import 'package:drivepay/UI/setting.dart';
 import 'package:drivepay/UI/driveLog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
