@@ -107,11 +107,11 @@ class DB {
               data['endPlace'] ?? '',
               data['money'] ?? '',
               data['groupId'] ?? '',
-              data['done'] ?? false,
+              data['member'] ?? [],
             ];
           }).toList();
       ref.read(historyItemProvider.notifier).state =
-          historyList.cast<List<String>>();
+          historyList.cast<List<dynamic>>();
     } catch (e) {
       debugPrint("ドライブ履歴の取得に失敗しました: $e");
     }
@@ -135,7 +135,7 @@ class DB {
               .doc(groupId)
               .get();
 
-      final members = group['members'] as List<dynamic>;
+      final List<String> members = group['members'];
 
       if (members.isEmpty) {
         debugPrint('グループにメンバーがいません。');
