@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
+import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
@@ -52,35 +53,6 @@ class ResultPage extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 70,
                             fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Column(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.link, color: Colors.white),
-                          iconSize: 40,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () {
-                            Clipboard.setData(
-                              ClipboardData(text: perPersonAmount.toString()),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('コピーしました')),
-                            );
-                          },
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                          child: Text(
-                            '金額をコピー',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12, // 小さめに
-                            ),
                           ),
                         ),
                       ],
@@ -181,7 +153,16 @@ class ResultPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 50),
-                      ToHomepageButton(),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 40),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ToHomepageButton(),
+                            ShareIconButton(perPersonAmount: perPersonAmount),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ],
