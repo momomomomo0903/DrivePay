@@ -12,6 +12,17 @@ class CreateGroupPage extends ConsumerStatefulWidget {
 }
 
 class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
+  static const int maxMembers = 8;
+
+  void _showMaxMembersError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('メンバーは最大8人までです'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(groupCreationControllerProvider);
@@ -56,12 +67,26 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                   icon: Icons.group,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'メンバー',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'メンバー',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '${controller.memberManagement.memberControllers.length}/$maxMembers',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: controller.memberManagement.memberControllers.length >= maxMembers 
+                          ? Colors.red 
+                          : Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 ...controller.memberManagement.memberControllers.asMap().entries.map((entry) {
@@ -94,11 +119,13 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
                 }),
                 const SizedBox(height: 16),
                 TextButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      controller.memberManagement.addMember();
-                    });
-                  },
+                  onPressed: controller.memberManagement.memberControllers.length >= maxMembers
+                    ? () => _showMaxMembersError()
+                    : () {
+                        setState(() {
+                          controller.memberManagement.addMember();
+                        });
+                      },
                   icon: const Icon(Icons.add_circle_outline, color: Color(0xFF45C4B0), size: 24),
                   label: const Text('メンバーを追加', style: TextStyle(color: Color(0xFF45C4B0))),
                 ),
