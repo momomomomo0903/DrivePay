@@ -1,4 +1,4 @@
-import 'package:drivepay/UI/home.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:flutter/material.dart';
 
 class ToHomepageButton extends StatelessWidget {
@@ -17,7 +17,7 @@ class ToHomepageButton extends StatelessWidget {
       onPressed: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
         );
       },

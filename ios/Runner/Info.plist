@@ -29,16 +29,16 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.998415778967-m7pvja79hrm89voo3p4e2euv79slrgjh</string>
+				<string>998415778967-c2c29kjcs9sm7e1oubkpj3isdc7k74sm.apps.googleusercontent.com</string>
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>paypay</string>
 	</array>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MAPS_API_KEY</key>

@@ -6,6 +6,7 @@ import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/logic/group/create_group.dart';
 import 'package:drivepay/logic/group/member_management.dart';
 import 'package:drivepay/logic/group/error_handler.dart';
+import 'package:drivepay/logic/group/group_controller.dart';
 
 final groupCreationControllerProvider = ChangeNotifierProvider.autoDispose((ref) {
   return GroupCreationController(ref);
@@ -16,9 +17,10 @@ class GroupCreationController extends ChangeNotifier {
   late final MemberManagement _memberManagement;
   final CreateGroup _createGroupLogic = CreateGroup();
   bool _isLoading = false;
+  final Ref _ref;
 
-  GroupCreationController(Ref ref) {
-    final name = ref.read(userNameProvider);
+  GroupCreationController(this._ref) {
+    final name = _ref.read(userNameProvider);
     _memberManagement = MemberManagement(initialMemberName: name);
     _memberManagement.addListener(_onMemberChanged);
   }
@@ -47,6 +49,9 @@ class GroupCreationController extends ChangeNotifier {
         groupName: groupName,
         members: members,
       );
+
+      final groupController = _ref.read(groupControllerProvider.notifier);
+      await groupController.loadGroups();
 
       ErrorHandler.showSuccessSnackBar(context, 'グループを作成しました');
       Navigator.pop(context);
