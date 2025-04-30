@@ -35,9 +35,7 @@
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>paypayjp</string>
 		<string>paypay</string>
-		<string>paypayjp-send</string>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
