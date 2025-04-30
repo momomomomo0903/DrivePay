@@ -30,10 +30,7 @@ class Firstpage extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.8,
             child: Text(
               'ガソリン代や高速代を自動計算し、\n運転者へのチップ送金もできるドライブ割り勘アプリ',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.black87),
               textAlign: TextAlign.center,
             ),
           ),
@@ -43,7 +40,9 @@ class Firstpage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const MainScreen(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -57,10 +56,7 @@ class Firstpage extends StatelessWidget {
               ),
               child: const Text(
                 'はじめる',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ),

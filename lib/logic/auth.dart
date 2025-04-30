@@ -128,7 +128,6 @@ class GoogleSignin {
           await DB.dataBaseWatch(ref);
           await DB.dataBaseUpdateWrite(ref);
           await DB.TimeStampWrite(ref, 'Googleログイン');
-          Navigator.pop(context);
         }
 
         ref.read(isLoginProvider.notifier).state = true;
