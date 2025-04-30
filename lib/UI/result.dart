@@ -25,7 +25,7 @@ class ResultPage extends ConsumerWidget {
     final to = ref.watch(toProvider);
     final groupId = ref.watch(groupIdProvider);
     final isLogin = ref.watch(isLoginProvider);
-    
+
     int totalAmount = perPersonAmount * peopleCount;
 
     if (isLogin) {
