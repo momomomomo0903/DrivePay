@@ -27,7 +27,24 @@ class ShareIconButton extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('共有', style: TextStyle(fontSize: 18)),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 5,
+                      left: 10,
+                      bottom: 10,
+                    ),
+                    child: const Text('共有', style: TextStyle(fontSize: 18)),
+                  ),
+                  Container(
+                    height: 1,
+                    width: double.infinity,
+                    color: Colors.grey[500],
+                    margin: const EdgeInsets.only(
+                      left: 3,
+                      right: 3,
+                      bottom: 10,
+                    ),
+                  ),
                   TextButton(
                     onPressed: () {
                       Clipboard.setData(
@@ -64,9 +81,18 @@ class ShareIconButton extends StatelessWidget {
                         },
                       );
                     },
+                    style: TextButton.styleFrom(foregroundColor: Colors.black),
                     child: Row(
                       children: [
-                        Icon(Icons.copy),
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.grey[300],
+                          child: Icon(
+                            Icons.copy,
+                            color: Colors.grey[600],
+                            size: 18,
+                          ),
+                        ),
                         const SizedBox(width: 20),
                         const Text('金額をコピーする'),
                       ],
@@ -80,19 +106,20 @@ class ShareIconButton extends StatelessWidget {
                         message: 'DrivePay 相乗り代金',
                       );
                     },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.black, // ← これで文字（とアイコン）の色が変わる！
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/paypay_icon.png',
-                          width: 25,
-                          height: 25,
-                        ),
-                        const SizedBox(width: 20),
-                        const Text('PayPayで支払う'),
-                      ],
+                    style: TextButton.styleFrom(foregroundColor: Colors.black),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/paypay_icon.png',
+                            width: 25,
+                            height: 25,
+                          ),
+                          const SizedBox(width: 20),
+                          const Text('PayPayで支払う'),
+                        ],
+                      ),
                     ),
                   ),
                 ],
