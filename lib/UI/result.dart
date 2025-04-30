@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
+import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/home.dart';
@@ -137,6 +138,16 @@ class ResultPage extends StatelessWidget {
                             ShareIconButton(perPersonAmount: perPersonAmount),
                           ],
                         ),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MainScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        },
+                        child: const Text('ホームに戻る'),
                       ),
                     ],
                   ),
