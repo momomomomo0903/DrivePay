@@ -5,7 +5,6 @@ import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:drivepay/services/paypay.dart';
 
 class ResultPage extends StatelessWidget {
   final int perPersonAmount;
@@ -32,7 +31,7 @@ class ResultPage extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 100, bottom: 150),
+                padding: const EdgeInsets.only(top: 150, bottom: 100),
                 decoration: const BoxDecoration(color: Color(0xFF45C4B0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -44,7 +43,8 @@ class ResultPage extends StatelessWidget {
                           '一人あたり',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 30,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
@@ -126,6 +126,7 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 50),
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
