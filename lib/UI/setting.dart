@@ -35,18 +35,14 @@ class _SettingPage extends ConsumerState<SettingPage> {
               Container(
                 width: 100,
                 height: 100,
+                padding: const EdgeInsets.all(6),
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    'assets/images/profile.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
                 ),
               ),
               // メインカード
