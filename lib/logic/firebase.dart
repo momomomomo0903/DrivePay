@@ -118,7 +118,7 @@ class DB {
   }
 
   /// ドライブ履歴をFirestoreに追加する
-  Future<void> addDriveHistory(
+  Future<void> firstAddDriveHistory(
     WidgetRef ref,
     String startPlace,
     String endPlace,
@@ -127,22 +127,25 @@ class DB {
   ) async {
     try {
       final uid = ref.watch(userIdProvider);
-      final members =
+      final group =
           await FirebaseFirestore.instance
               .collection('users')
               .doc(uid)
-              .collection('group')
+              .collection('groups')
               .doc(groupId)
-              .collection('members')
               .get();
-      final List<Map<String, dynamic>> memberList =
-          members.docs.map((doc) {
-            final data = doc.data();
-            return {
-              'name': data['name'] ?? '未設定',
-              'paid': false, // 初期は未払い
-            };
-          }).toList();
+
+      final members = group['members'] as List<dynamic>;
+
+      if (members.isEmpty) {
+        debugPrint('グループにメンバーがいません。');
+        return;
+      }
+
+      // [[名前, false], ...] の形式に変換
+      final memberList =
+          members.map((name) => {'name': name, 'paid': false}).toList();
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -155,7 +158,7 @@ class DB {
             'groupId': groupId,
             'member': memberList,
           });
-      getHistoryItems(ref);
+      await getHistoryItems(ref);
 
       debugPrint('書き込み成功');
     } catch (e) {
