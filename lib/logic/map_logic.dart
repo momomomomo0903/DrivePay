@@ -14,9 +14,8 @@ class MapLogic {
   final Function(Set<Marker>) updateMarkers;
   final Function(String) updateStartAddress;
   final Function(Set<Polyline>) updatePolylines;
-  Position? _currentPosition;
+  Position? currentPosition;
   StreamSubscription<Position>? _positionStream;
-  Position? get currentPosition => _currentPosition;
 
   MapLogic({
     required this.updateMarkers,
@@ -58,6 +57,31 @@ class MapLogic {
     }
   }
 
+  Future<LatLng?> getLatLngFromAddress(String address, String apiKey) async {
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          final location = data['results'][0]['geometry']['location'];
+          return LatLng(location['lat'], location['lng']);
+        } else {
+          debugPrint('検索失敗: ${data['status']}');
+        }
+      } else {
+        debugPrint('HTTPエラー: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('例外発生: $e');
+    }
+
+    return null;
+  }
+
   // 現在地の取得
   Future<void> getCurrentLocation(
     Function(CameraPosition) setInitialLocation, {
@@ -88,7 +112,7 @@ class MapLogic {
         desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
 
-      _currentPosition = position;
+      currentPosition = position;
 
       setInitialLocation(
         CameraPosition(
@@ -412,12 +436,12 @@ class MapLogic {
 
   // 近くのガソスタを検索
   Future<void> searchNearbyGasStations(BuildContext context) async {
-    if (_currentPosition == null) return;
+    if (currentPosition == null) return;
     updateMarkers({});
     updatePolylines({});
 
-    final lat = _currentPosition!.latitude;
-    final lng = _currentPosition!.longitude;
+    final lat = currentPosition!.latitude;
+    final lng = currentPosition!.longitude;
 
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
