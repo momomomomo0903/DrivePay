@@ -1,6 +1,6 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
-import 'package:drivepay/UI/home.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:drivepay/services/paypay.dart';
@@ -185,7 +185,7 @@ class ResultPage extends StatelessWidget {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const HomePage(),
+                              builder: (context) => MainScreen(),
                             ),
                             (route) => false,
                           );
