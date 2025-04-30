@@ -7,6 +7,8 @@ import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
+import 'package:drivepay/UI/drivehistory.dart';
+import 'package:drivepay/UI/explanation.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -235,6 +237,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToHistory(BuildContext context) {
     Navigator.push(
       context,
+
       MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 1)),
     );
   }
@@ -242,7 +245,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToInfomation(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Firstpage()),
+      MaterialPageRoute(builder: (context) => const ExplanationPage()),
     );
   }
 
