@@ -1,3 +1,4 @@
+import 'package:drivepay/services/paypay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -71,12 +72,28 @@ class ShareIconButton extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      Image.asset('assets/images/paypay_icon.png'),
-                      const SizedBox(width: 20),
-                      const Text('PayPayで支払う'),
-                    ],
+                  TextButton(
+                    onPressed: () {
+                      PayPayService.launchPayPay(
+                        context: context,
+                        amount: perPersonAmount,
+                        message: 'DrivePay 相乗り代金',
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black, // ← これで文字（とアイコン）の色が変わる！
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/paypay_icon.png',
+                          width: 25,
+                          height: 25,
+                        ),
+                        const SizedBox(width: 20),
+                        const Text('PayPayで支払う'),
+                      ],
+                    ),
                   ),
                 ],
               ),

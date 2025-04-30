@@ -126,32 +126,6 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 0),
-                      // PayPayボタンを追加
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          PayPayService.launchPayPay(
-                            context: context,
-                            amount: perPersonAmount,
-                            message: 'DrivePay 相乗り代金',
-                          );
-                        },
-                        icon: const Icon(Icons.payment, color: Colors.white),
-                        label: const Text('PayPayで支払う'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFFFF0033,
-                          ), // PayPayのブランドカラー
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 50),
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
