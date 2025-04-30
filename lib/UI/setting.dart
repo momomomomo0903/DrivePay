@@ -1,4 +1,4 @@
-import 'package:drivepay/UI/driveLog.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
@@ -127,7 +127,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                   onTap:
                       isLogin
                           ? () => _navigateToHistory(context)
-                          : () => _navigateToHistory(context),
+                          : () => _navigateToLogin(context),
                 ),
                 _buildFeatureButton(
                   icon: Icons.info_outline,
@@ -214,12 +214,8 @@ class _SettingPage extends ConsumerState<SettingPage> {
                         shape: const StadiumBorder(),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AuthLoginPage(),
-                          ),
-                        );
+                        GoogleSignin.signInWithGoogle(ref, context);
+                        Navigator.pop(context);
                       },
                       child: Text(
                         'ログイン',
@@ -243,7 +239,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToHistory(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const DriveLogPage()),
+      MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 1)),
     );
   }
 
