@@ -4,7 +4,10 @@ import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
 import 'package:drivepay/config/api_key.dart';
+import 'package:drivepay/state/auth_status.dart';
+import 'package:drivepay/state/home_status.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -73,13 +76,13 @@ Future<Map<String, dynamic>> fetchData(
   throw Exception('データの取得に失敗しました');
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
   @override
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
@@ -178,6 +181,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLogin = ref.watch(isLoginProvider);
     return Scaffold(
       backgroundColor: Color(0xFFF6FFFE),
       body: SingleChildScrollView(
@@ -315,7 +319,9 @@ class HomePageState extends State<HomePage> {
                       errorMessage = '乗車人数を入力してください';
                     }
                     // 乗車人数の数値チェック
-                    else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    else if (!RegExp(
+                      r'^\d+$',
+                    ).hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
                     }
                     // 乗車人数の範囲チェック
@@ -357,6 +363,13 @@ class HomePageState extends State<HomePage> {
                       highway,
                       viaList,
                     );
+                    if (isLogin) {
+                      ref.read(fromProvider.notifier).state = from;
+                      ref.read(toProvider.notifier).state = to;
+                      ref.read(groupIdProvider.notifier).state =
+                          '1745671777187'; // rkt9tuba4develop@gmail.com内のグループIDを仮で利用
+                    }
+                    // 結果を表示するページに遷移
                     Navigator.push(
                       context,
                       MaterialPageRoute(

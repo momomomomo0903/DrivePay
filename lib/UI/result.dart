@@ -1,12 +1,13 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
-
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
-import 'package:drivepay/UI/home.dart';
+import 'package:drivepay/logic/firebase.dart';
+import 'package:drivepay/state/auth_status.dart';
+import 'package:drivepay/state/home_status.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ResultPage extends StatelessWidget {
+class ResultPage extends ConsumerWidget {
   final int perPersonAmount;
   final int peopleCount;
   final double distance;
@@ -19,8 +20,17 @@ class ResultPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final from = ref.watch(fromProvider);
+    final to = ref.watch(toProvider);
+    final groupId = ref.watch(groupIdProvider);
+    final isLogin = ref.watch(isLoginProvider);
+    
     int totalAmount = perPersonAmount * peopleCount;
+
+    if (isLogin) {
+      DB().addDriveHistory(ref, from, to, perPersonAmount, groupId);
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
