@@ -1,17 +1,16 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:drivepay/logic/map.dart';
+import 'package:drivepay/logic/map_logic.dart';
 
-class MapPage extends ConsumerStatefulWidget {
+class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
   @override
-  ConsumerState<MapPage> createState() => _MapPageState();
+  State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends ConsumerState<MapPage> {
+class _MapPageState extends State<MapPage> {
   GoogleMapController? mapController;
   CameraPosition? _initialLocation;
   Set<Marker> _markers = {};

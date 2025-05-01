@@ -1,3 +1,4 @@
+import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/logic/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
@@ -36,18 +37,14 @@ class _SettingPage extends ConsumerState<SettingPage> {
               Container(
                 width: 100,
                 height: 100,
+                padding: const EdgeInsets.all(6),
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    'assets/images/profile.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
                 ),
               ),
               // メインカード
@@ -80,14 +77,16 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           !isLogin
                               ? ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AuthLoginPage(),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => AuthLoginPage(),
+                                  //   ),
+                                  // );
+                                  GoogleSignin.signInWithGoogle(ref, context);
                                 },
-                                child: Text("ログイン"),
+                                // child: Text("ログイン"),
+                                child: Text("Googleでログイン"),
                               )
                               : ElevatedButton(
                                 onPressed: () {
@@ -213,12 +212,8 @@ class _SettingPage extends ConsumerState<SettingPage> {
                         shape: const StadiumBorder(),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AuthLoginPage(),
-                          ),
-                        );
+                        GoogleSignin.signInWithGoogle(ref, context);
+                        Navigator.pop(context);
                       },
                       child: Text(
                         'ログイン',
@@ -242,7 +237,8 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToHistory(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const DriveHistoryPage()),
+
+      MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 1)),
     );
   }
 
