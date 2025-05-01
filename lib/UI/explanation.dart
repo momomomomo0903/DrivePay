@@ -1,9 +1,11 @@
+// explanation.dart
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/explanation/fare_calculation_detail.dart';
 import 'package:drivepay/UI/explanation/payment_detail.dart';
 import 'package:drivepay/UI/explanation/map_detail.dart';
 import 'package:drivepay/UI/explanation/group_detail.dart';
 import 'package:drivepay/UI/explanation/history_detail.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 
 class ExplanationPage extends StatelessWidget {
   const ExplanationPage({super.key});
@@ -60,6 +62,51 @@ class ExplanationPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color(0xff45C4B0),
+        iconSize: 30,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.home_outlined),
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.groups_outlined),
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.map_outlined),
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.brightness_low_rounded),
+            ),
+            label: '',
+          ),
+        ],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        currentIndex: 0,
+        onTap: (index) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+            (route) => false,
+          );
+        },
       ),
     );
   }
