@@ -29,7 +29,7 @@ class ResultPage extends ConsumerWidget {
     int totalAmount = perPersonAmount * peopleCount;
 
     if (isLogin) {
-      DB().firstAddDriveHistory(ref, from, to, perPersonAmount, groupId);
+      DB().firstAddDriveHistory(ref, from, to, distance, perPersonAmount, groupId);
     }
 
     return Scaffold(

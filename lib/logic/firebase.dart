@@ -101,13 +101,18 @@ class DB {
       final historyList =
           snapshot.docs.map((doc) {
             final data = doc.data();
+            final timestamp = data['date'];
             return [
-              data['timestamp'] ?? '',
+              timestamp != null
+                  ? _formatDateToYMD((timestamp as Timestamp).toDate())
+                  : '',
               data['startPlace'] ?? '',
               data['endPlace'] ?? '',
+              data['distance'] ?? '',
               data['money'] ?? '',
               data['groupId'] ?? '',
               data['member'] ?? [],
+              data['memo'] ?? '',
             ];
           }).toList();
       ref.read(historyItemProvider.notifier).state =
@@ -117,11 +122,19 @@ class DB {
     }
   }
 
+  String _formatDateToYMD(DateTime date) {
+    final year = date.year.toString();
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '$year/$month/$day';
+  }
+
   /// ドライブ履歴をFirestoreに追加する
   Future<void> firstAddDriveHistory(
     WidgetRef ref,
     String startPlace,
     String endPlace,
+    double distance,
     int money,
     String groupId,
   ) async {
@@ -135,7 +148,12 @@ class DB {
               .doc(groupId)
               .get();
 
-      final List<String> members = group['members'];
+      final members =
+          group['members'].first is String
+              ? group['members']
+                  .map((name) => {'name': name, 'paid': false})
+                  .toList()
+              : group['members'];
 
       if (members.isEmpty) {
         debugPrint('グループにメンバーがいません。');
@@ -154,9 +172,11 @@ class DB {
             'date': FieldValue.serverTimestamp(),
             'startPlace': startPlace,
             'endPlace': endPlace,
+            'distance': distance,
             'money': money,
             'groupId': groupId,
             'member': memberList,
+            'memo': '',
           });
       await getHistoryItems(ref);
 
