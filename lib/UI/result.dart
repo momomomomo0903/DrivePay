@@ -1,27 +1,23 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
-import 'package:drivepay/UI/home.dart';
 import 'package:drivepay/services/group_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class ResultPage extends StatefulWidget {
   final int perPersonAmount;
   final int peopleCount;
   final double distance;
-  final String groupId;
+  final String? groupId;
 
   const ResultPage({
     super.key,
     required this.perPersonAmount,
     required this.peopleCount,
     required this.distance,
-    required this.groupId,
+    this.groupId,
   });
 
   @override
@@ -35,8 +31,9 @@ class _ResultPageState extends State<ResultPage> {
   void initState() {
     super.initState();
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) {
-      GroupService.fetchGroupMembers(uid: uid, groupId: widget.groupId).then((
+    if (uid == null || widget.groupId == null) return;
+    {
+      GroupService.fetchGroupMembers(uid: uid, groupId: widget.groupId!).then((
         members,
       ) {
         setState(() {

@@ -15,7 +15,7 @@ import 'package:drivepay/UI/component/home/group_dropdown.dart';
 
 final String apiKey = ApiKeys.api_key;
 List<Map<String, dynamic>> _groups = [];
-String? _selectedGroupId;
+String? _selectedGroupId = null;
 
 Future<Map<String, dynamic>> fetchData(
   String from,
@@ -309,18 +309,19 @@ class HomePageState extends State<HomePage> {
                 parkingController: _parkingController,
                 highwayController: _highwayController,
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 20),
               // グループ選択ドロップダウン
-              GroupDropdown(
-                groups: _groups,
-                selectedGroupId: _selectedGroupId,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedGroupId = newValue;
-                  });
-                },
-              ),
-
+              if (_groups.isNotEmpty)
+                GroupDropdown(
+                  groups: _groups,
+                  selectedGroupId: _selectedGroupId,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedGroupId = newValue;
+                    });
+                  },
+                ),
+              SizedBox(height: 50),
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
@@ -397,7 +398,7 @@ class HomePageState extends State<HomePage> {
                               perPersonAmount: result['perPerson'],
                               peopleCount: result['people'],
                               distance: result['distance'],
-                              groupId: _selectedGroupId!,
+                              groupId: _selectedGroupId,
                             ),
                       ),
                     );
