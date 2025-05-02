@@ -46,23 +46,6 @@ class _ResultPageState extends State<ResultPage> {
     }
   }
 
-  Future<void> fetchGroupMembers(String uid, String groupId) async {
-    final doc =
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .collection('groups')
-            .doc(groupId)
-            .get();
-
-    final data = doc.data();
-    if (data != null && data.containsKey('members')) {
-      setState(() {
-        _members = List<String>.from(data['members']);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     int totalAmount = widget.perPersonAmount * widget.peopleCount;
