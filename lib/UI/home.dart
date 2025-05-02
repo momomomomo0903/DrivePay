@@ -9,8 +9,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:drivepay/services/group_service.dart';
+import 'package:drivepay/UI/component/home/group_dropdown.dart';
 
 final String apiKey = ApiKeys.api_key;
+List<Map<String, dynamic>> _groups = [];
+String? _selectedGroupId;
+
 Future<Map<String, dynamic>> fetchData(
   String from,
   String to,
@@ -174,6 +180,19 @@ class HomePageState extends State<HomePage> {
     super.initState();
     // 初期状態で経由1だけ追加
     _viaControllers.add(TextEditingController());
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid != null && uid.isNotEmpty) {
+      GroupService.fetchUserGroups(uid)
+          .then((groups) {
+            setState(() {
+              _groups = groups;
+            });
+          })
+          .catchError((error) {
+            debugPrint('グループの取得に失敗しました: $error');
+          });
+    }
   }
 
   @override
@@ -291,6 +310,17 @@ class HomePageState extends State<HomePage> {
                 highwayController: _highwayController,
               ),
               const SizedBox(height: 50),
+              // グループ選択ドロップダウン
+              GroupDropdown(
+                groups: _groups,
+                selectedGroupId: _selectedGroupId,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedGroupId = newValue;
+                  });
+                },
+              ),
+
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
@@ -315,7 +345,9 @@ class HomePageState extends State<HomePage> {
                       errorMessage = '乗車人数を入力してください';
                     }
                     // 乗車人数の数値チェック
-                    else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    else if (!RegExp(
+                      r'^\d+$',
+                    ).hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
                     }
                     // 乗車人数の範囲チェック
@@ -365,6 +397,7 @@ class HomePageState extends State<HomePage> {
                               perPersonAmount: result['perPerson'],
                               peopleCount: result['people'],
                               distance: result['distance'],
+                              groupId: _selectedGroupId!,
                             ),
                       ),
                     );
