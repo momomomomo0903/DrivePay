@@ -4,6 +4,7 @@ import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/component/result/defaulter_list.dart';
+// import 'package:drivepay/UI/component/result/defaulter_list_group.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -135,6 +136,7 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                       const SizedBox(height: 35),
                       DefaulterList(maxCount: widget.peopleCount),
+                      // DefaulterListGroup(maxCount: widget.peopleCount),
                       const SizedBox(height: 35),
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
