@@ -3,11 +3,12 @@
 import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
+import 'package:drivepay/UI/component/result/defaulter_list.dart';
 import 'package:drivepay/UI/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ResultPage extends StatelessWidget {
+class ResultPage extends StatefulWidget {
   final int perPersonAmount;
   final int peopleCount;
   final double distance;
@@ -20,8 +21,13 @@ class ResultPage extends StatelessWidget {
   });
 
   @override
+  State<ResultPage> createState() => _ResultPageState();
+}
+
+class _ResultPageState extends State<ResultPage> {
+  @override
   Widget build(BuildContext context) {
-    int totalAmount = perPersonAmount * peopleCount;
+    int totalAmount = widget.perPersonAmount * widget.peopleCount;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -32,7 +38,7 @@ class ResultPage extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 150, bottom: 100),
+                padding: const EdgeInsets.only(top: 120, bottom: 80),
                 decoration: const BoxDecoration(color: Color(0xFF45C4B0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +55,7 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '¥$perPersonAmount',
+                          '¥${widget.perPersonAmount}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 70,
@@ -61,7 +67,7 @@ class ResultPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 40),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -82,7 +88,7 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          '距離　　　　${distance.toStringAsFixed(1)} Km',
+                          '距離　　　　${widget.distance.toStringAsFixed(1)} Km',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -103,7 +109,7 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          '一人　　　　${perPersonAmount}円 × ${peopleCount}人',
+                          '一人　　　　${widget.perPersonAmount}円 × ${widget.peopleCount}人',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -127,14 +133,16 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 35),
+                      DefaulterList(maxCount: widget.peopleCount),
+                      const SizedBox(height: 35),
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ToHomepageButton(),
-                            ShareIconButton(perPersonAmount: perPersonAmount),
+                            ShareIconButton(perPersonAmount: widget.perPersonAmount),
                           ],
                         ),
                       ),
