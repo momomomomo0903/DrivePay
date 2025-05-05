@@ -299,7 +299,7 @@ class HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 16),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center, // ← これを追加！
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   InputText(
                     label: '乗車人数',
@@ -316,6 +316,17 @@ class HomePageState extends State<HomePage> {
                         onChanged: (String? newValue) {
                           setState(() {
                             _selectedGroupId = newValue;
+
+                            final selectedGroup = _groups.firstWhere(
+                              (group) => group['groupId'] == newValue,
+                              orElse: () => {},
+                            );
+
+                            if (selectedGroup.isNotEmpty &&
+                                selectedGroup.length != null) {
+                              _numberController.text =
+                                  selectedGroup["members"].length.toString();
+                            }
                           });
                         },
                       ),
