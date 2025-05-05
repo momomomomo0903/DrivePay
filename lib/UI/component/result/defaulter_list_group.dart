@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../checkbox.dart';
 
 class NameItem {
   String name;
@@ -71,16 +72,13 @@ class _DefaulterListGroupState extends State<DefaulterListGroup> {
                         children: [
                           Row(
                             children: [
-                              Checkbox(
+                              CustomCheckbox(
                                 value: nameItem.isChecked,
                                 onChanged: (bool? value) {
                                   setState(() {
                                     nameItem.isChecked = value ?? false;
                                   });
                                 },
-                                activeColor: Colors.white,
-                                checkColor: const Color(0xFF45C4B0),
-                                side: const BorderSide(color: Colors.white),
                               ),
                               Text(
                                 nameItem.name,
