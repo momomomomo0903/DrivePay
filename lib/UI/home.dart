@@ -298,29 +298,38 @@ class HomePageState extends State<HomePage> {
                 controller: _toController,
               ),
               const SizedBox(height: 16),
-              InputText(
-                label: '乗車人数',
-                hintText: '',
-                width: 150,
-                controller: _numberController,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center, // ← これを追加！
+                children: [
+                  InputText(
+                    label: '乗車人数',
+                    hintText: '',
+                    width: 150,
+                    controller: _numberController,
+                  ),
+                  if (_groups.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 17, bottom: 20),
+                      child: GroupDropdown(
+                        groups: _groups,
+                        selectedGroupId: _selectedGroupId,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedGroupId = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                ],
               ),
+
               const SizedBox(height: 20),
               InputConditions(
                 parkingController: _parkingController,
                 highwayController: _highwayController,
               ),
               const SizedBox(height: 20),
-              // グループ選択ドロップダウン
-              if (_groups.isNotEmpty)
-                GroupDropdown(
-                  groups: _groups,
-                  selectedGroupId: _selectedGroupId,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedGroupId = newValue;
-                    });
-                  },
-                ),
+
               SizedBox(height: 50),
               Align(
                 alignment: Alignment.center,

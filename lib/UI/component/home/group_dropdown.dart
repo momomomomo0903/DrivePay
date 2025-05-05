@@ -23,11 +23,10 @@ class GroupDropdown extends StatelessWidget {
         ),
         const SizedBox(width: 16),
         Container(
-          width: 200,
+          width: 210,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             border: Border.all(color: Color(0xFF439A8C), width: 2),
-            borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
@@ -38,7 +37,7 @@ class GroupDropdown extends StatelessWidget {
                 const DropdownMenuItem<String>(
                   value: null,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    padding: EdgeInsets.symmetric(vertical: 3.0),
                     child: Text("選択しない"),
                   ),
                 ),
