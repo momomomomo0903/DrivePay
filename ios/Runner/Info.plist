@@ -50,10 +50,14 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>プロフィール画像を撮影するためにカメラへのアクセスが必要です</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>現在地を取得するために位置情報の使用を許可してください。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>現在地を取得するために位置情報の使用を許可してください。</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>プロフィール画像を選択するためにフォトライブラリへのアクセスが必要です</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

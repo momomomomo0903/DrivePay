@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
 import 'package:drivepay/UI/drivehistory.dart';
 import 'package:drivepay/UI/explanation.dart';
+import 'package:drivepay/logic/profile_image.dart';
+import 'package:drivepay/state/profile_image_state.dart';
+import 'dart:io';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -23,6 +26,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
     final isLogin = ref.watch(isLoginProvider);
     final userName = ref.watch(userNameProvider);
     final eMail = ref.watch(eMailProvider);
+    final profileImage = ref.watch(profileImageProvider);
     return Column(
       children: [
         Container(
@@ -33,18 +37,30 @@ class _SettingPage extends ConsumerState<SettingPage> {
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
-              // 円形の画像
-              Container(
-                width: 100,
-                height: 100,
-                padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  fit: BoxFit.contain,
+              // プロフィール画像
+              GestureDetector(
+                onTap: () => _showImagePickerDialog(context),
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: profileImage != null
+                      ? ClipOval(
+                          child: Image.file(
+                            profileImage,
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                          ),
+                        )
+                      : Image.asset(
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
+                        ),
                 ),
               ),
               // メインカード
@@ -267,6 +283,44 @@ class _SettingPage extends ConsumerState<SettingPage> {
                   'https://docs.google.com/forms/d/e/1FAIpQLSe1UBYrgiDekPvA2RMLPVZvsrQwQdJ0j98iNiNZDyy1m6Z3ZQ/viewform?usp=header',
             ),
       ),
+    );
+  }
+
+  void _showImagePickerDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('プロフィール画像を選択'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('ギャラリーから選択'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final image = await ProfileImageLogic.pickImageFromGallery();
+                  if (image != null) {
+                    ref.read(profileImageProvider.notifier).state = image;
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('カメラで撮影'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final image = await ProfileImageLogic.pickImageFromCamera();
+                  if (image != null) {
+                    ref.read(profileImageProvider.notifier).state = image;
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

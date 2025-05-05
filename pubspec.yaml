@@ -25,6 +25,7 @@ dependencies:
   url_launcher: ^6.2.5
   firebase_storage: ^12.4.5
   connectivity_plus: ^6.1.4
+  image_picker: ^1.0.7
 
 
 dev_dependencies:
