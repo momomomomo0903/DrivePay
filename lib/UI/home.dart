@@ -234,7 +234,7 @@ class HomePageState extends State<HomePage> {
                 width: MediaQuery.of(context).size.width - 32,
                 controller: _fromController,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
               // 複数の経由地を表示
               ..._viaControllers.asMap().entries.map((entry) {
@@ -296,7 +296,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               InputText(
                 label: '到着地',
                 hintText: '駅、バス停、住所、施設',
@@ -304,48 +304,62 @@ class HomePageState extends State<HomePage> {
                 controller: _toController,
               ),
               const SizedBox(height: 16),
+              // ラベル行
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  InputText(
-                    label: '乗車人数',
-                    hintText: '',
+                  SizedBox(
                     width: 150,
-                    controller: _numberController,
+                    child: Text('乗車人数', style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0))),
                   ),
-                  if (_groups.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 17, bottom: 20),
-                      child: GroupDropdown(
-                        groups: _groups,
-                        selectedGroupId: _selectedGroupId,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedGroupId = newValue;
-
-                            final selectedGroup = _groups.firstWhere(
-                              (group) => group['groupId'] == newValue,
-                              orElse: () => {},
-                            );
-
-                            if (selectedGroup.isNotEmpty &&
-                                selectedGroup.length != null) {
-                              _numberController.text =
-                                  selectedGroup["members"].length.toString();
-                            }
-                          });
-                        },
-                      ),
+                  SizedBox(width: 17),
+                  SizedBox(
+                    width: 150,
+                    child: Text('グループを選択', style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0))),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              // 入力行
+              Row(
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: InputText(
+                      label: '乗車人数',
+                      hintText: '',
+                      width: 150,
+                      controller: _numberController,
                     ),
+                  ),
+                  SizedBox(width: 16),
+                  SizedBox(
+                    width: 150,
+                    child: GroupDropdown(
+                      groups: _groups,
+                      selectedGroupId: _selectedGroupId,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedGroupId = newValue;
+                          final selectedGroup = _groups.firstWhere(
+                            (group) => group['groupId'] == newValue,
+                            orElse: () => {},
+                          );
+                          if (selectedGroup.isNotEmpty && selectedGroup.length != null) {
+                            _numberController.text = selectedGroup["members"].length.toString();
+                          }
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               // レンタカー選択
               Row(
                 children: [
                   const Text('レンタカーですか？'),
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 12),
                   Row(
                     children: [
                       Radio<bool>(
@@ -375,14 +389,14 @@ class HomePageState extends State<HomePage> {
 
               // レンタカーが選択された場合の追加フィールド
               if (_isRentalCar) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 InputText(
-                  label: 'レンタル代',
+                  label: '借料',
                   hintText: '円',
                   width: 150,
                   controller: _rentalFeeController,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Checkbox(
@@ -398,7 +412,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ],
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
               InputConditions(
                 parkingController: _parkingController,
