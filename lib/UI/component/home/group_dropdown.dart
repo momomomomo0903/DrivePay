@@ -14,48 +14,38 @@ class GroupDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "グループを選択",
-          style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0)),
-        ),
-        const SizedBox(width: 16),
-        Container(
-          width: 210,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Color(0xFF439A8C), width: 2),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: selectedGroupId,
-              hint: const Text("選択してください"),
-              items: [
-                const DropdownMenuItem<String>(
-                  value: null,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 3.0),
-                    child: Text("選択しない"),
-                  ),
-                ),
-                ...groups.map((group) {
-                  return DropdownMenuItem<String>(
-                    value: group['groupId'],
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(group['groupName'] ?? '名前なし'),
-                    ),
-                  );
-                }).toList(),
-              ],
-              onChanged: onChanged,
+    return Container(
+      width: 210,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Color(0xFF439A8C), width: 2),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          isExpanded: true,
+          value: selectedGroupId,
+          hint: const Text("選択してください"),
+          items: [
+            const DropdownMenuItem<String>(
+              value: null,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 3.0),
+                child: Text("選択しない"),
+              ),
             ),
-          ),
+            ...groups.map((group) {
+              return DropdownMenuItem<String>(
+                value: group['groupId'],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(group['groupName'] ?? '名前なし'),
+                ),
+              );
+            }).toList(),
+          ],
+          onChanged: onChanged,
         ),
-      ],
+      ),
     );
   }
 }
