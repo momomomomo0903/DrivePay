@@ -9,8 +9,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:drivepay/services/group_service.dart';
+import 'package:drivepay/UI/component/home/group_dropdown.dart';
 
 final String apiKey = ApiKeys.api_key;
+List<Map<String, dynamic>> _groups = [];
+String? _selectedGroupId = null;
+
 Future<Map<String, dynamic>> fetchData(
   String from,
   String to,
@@ -180,6 +186,19 @@ class HomePageState extends State<HomePage> {
     super.initState();
     // 初期状態で経由1だけ追加
     _viaControllers.add(TextEditingController());
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid != null && uid.isNotEmpty) {
+      GroupService.fetchUserGroups(uid)
+          .then((groups) {
+            setState(() {
+              _groups = groups;
+            });
+          })
+          .catchError((error) {
+            debugPrint('グループの取得に失敗しました: $error');
+          });
+    }
   }
 
   @override
@@ -285,12 +304,42 @@ class HomePageState extends State<HomePage> {
                 controller: _toController,
               ),
               const SizedBox(height: 16),
-              InputText(
-                label: '乗車人数',
-                hintText: '',
-                width: 150,
-                controller: _numberController,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  InputText(
+                    label: '乗車人数',
+                    hintText: '',
+                    width: 150,
+                    controller: _numberController,
+                  ),
+                  if (_groups.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 17, bottom: 20),
+                      child: GroupDropdown(
+                        groups: _groups,
+                        selectedGroupId: _selectedGroupId,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedGroupId = newValue;
+
+                            final selectedGroup = _groups.firstWhere(
+                              (group) => group['groupId'] == newValue,
+                              orElse: () => {},
+                            );
+
+                            if (selectedGroup.isNotEmpty &&
+                                selectedGroup.length != null) {
+                              _numberController.text =
+                                  selectedGroup["members"].length.toString();
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                ],
               ),
+
               const SizedBox(height: 16),
               // レンタカー選択
               Row(
@@ -350,11 +399,14 @@ class HomePageState extends State<HomePage> {
               ],
 
               const SizedBox(height: 16),
+
               InputConditions(
                 parkingController: _parkingController,
                 highwayController: _highwayController,
               ),
+
               const SizedBox(height: 25),
+
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
@@ -374,7 +426,10 @@ class HomePageState extends State<HomePage> {
                       errorMessage = '出発地と到着地を入力してください';
                     } else if (_numberController.text.isEmpty) {
                       errorMessage = '乗車人数を入力してください';
+
+                      // 乗車人数の数値チェック
                     } else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+
                       errorMessage = '乗車人数は数値で入力してください';
                     } else if (int.parse(_numberController.text) <= 0) {
                       errorMessage = '乗車人数は1人以上で入力してください';
@@ -447,6 +502,7 @@ class HomePageState extends State<HomePage> {
                           perPersonAmount: perPersonCost.toInt(),
                           peopleCount: result['people'],
                           distance: result['distance'],
+                          groupId: _selectedGroupId,
                         ),
                       ),
                     );
