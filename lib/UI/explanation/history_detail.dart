@@ -94,7 +94,7 @@ class HistoryDetailPage extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(18),
                     child: Image.asset(
-                      'assets/images/fare_calculation_screen.png',
+                      'assets/images/drive_history.png',
                       fit: BoxFit.contain,
                     ),
                   ),
