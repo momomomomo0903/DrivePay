@@ -54,7 +54,8 @@ Future<Map<String, dynamic>> fetchData(
 
       final parkingFee = int.tryParse(parking ?? '') ?? 0;
       final highwayFee = int.tryParse(highway ?? '') ?? 0;
-      final sumFare = distanceKm * 15 + parkingFee + highwayFee;
+      // ガソリン代を別途計算するため、ここでは含めない
+      final sumFare = parkingFee + highwayFee;
       final perPersonFee = sumFare / int.parse(number);
 
       debugPrint(
@@ -91,9 +92,14 @@ class HomePageState extends State<HomePage> {
   final TextEditingController _numberController = TextEditingController();
   final TextEditingController _parkingController = TextEditingController();
   final TextEditingController _highwayController = TextEditingController();
+  final TextEditingController _rentalFeeController = TextEditingController();
 
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
+
+  // レンタカー関連の状態管理
+  bool _isRentalCar = false;
+  bool _includeGasFee = false;  // ガソリン代を含めるかどうかのフラグ
 
   // エラーダイアログを表示する関数
   void _showErrorDialog(String message) {
@@ -290,7 +296,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               InputText(
                 label: '到着地',
                 hintText: '駅、バス停、住所、施設',
@@ -334,14 +340,73 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              // レンタカー選択
+              Row(
+                children: [
+                  const Text('レンタカーですか？'),
+                  const SizedBox(width: 20),
+                  Row(
+                    children: [
+                      Radio<bool>(
+                        value: true,
+                        groupValue: _isRentalCar,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isRentalCar = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('はい'),
+                      Radio<bool>(
+                        value: false,
+                        groupValue: _isRentalCar,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isRentalCar = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('いいえ'),
+                    ],
+                  ),
+                ],
+              ),
+
+              // レンタカーが選択された場合の追加フィールド
+              if (_isRentalCar) ...[
+                const SizedBox(height: 16),
+                InputText(
+                  label: 'レンタル代',
+                  hintText: '円',
+                  width: 150,
+                  controller: _rentalFeeController,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _includeGasFee,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _includeGasFee = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text('ガソリン代を計算に含める'),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 16),
+
               InputConditions(
                 parkingController: _parkingController,
                 highwayController: _highwayController,
               ),
-              const SizedBox(height: 20),
 
-              SizedBox(height: 50),
+              const SizedBox(height: 25),
+
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
@@ -356,32 +421,33 @@ class HomePageState extends State<HomePage> {
                     // バリデーションチェック
                     String? errorMessage;
 
-                    // 出発地と到着地のチェック
-                    if (_fromController.text.isEmpty ||
-                        _toController.text.isEmpty) {
+                    // 既存のバリデーション
+                    if (_fromController.text.isEmpty || _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
-                    }
-                    // 乗車人数のチェック
-                    else if (_numberController.text.isEmpty) {
+                    } else if (_numberController.text.isEmpty) {
                       errorMessage = '乗車人数を入力してください';
-                    }
-                    // 乗車人数の数値チェック
-                    else if (!RegExp(
-                      r'^\d+$',
-                    ).hasMatch(_numberController.text)) {
+
+                      // 乗車人数の数値チェック
+                    } else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+
                       errorMessage = '乗車人数は数値で入力してください';
-                    }
-                    // 乗車人数の範囲チェック
-                    else if (int.parse(_numberController.text) <= 0) {
+                    } else if (int.parse(_numberController.text) <= 0) {
                       errorMessage = '乗車人数は1人以上で入力してください';
-                    }
-                    // 駐車場代と高速代の数値チェック（入力されている場合のみ）
-                    else if (_parkingController.text.isNotEmpty &&
+                    } else if (_parkingController.text.isNotEmpty &&
                         !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
                       errorMessage = '駐車場代は数値で入力してください';
                     } else if (_highwayController.text.isNotEmpty &&
                         !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
                       errorMessage = '高速代は数値で入力してください';
+                    }
+
+                    // レンタカー関連のバリデーション
+                    if (_isRentalCar) {
+                      if (_rentalFeeController.text.isEmpty) {
+                        errorMessage = 'レンタル代を入力してください';
+                      } else if (!RegExp(r'^\d+$').hasMatch(_rentalFeeController.text)) {
+                        errorMessage = 'レンタル代は数値で入力してください';
+                      }
                     }
 
                     if (errorMessage != null) {
@@ -401,6 +467,7 @@ class HomePageState extends State<HomePage> {
                     final number = _numberController.text;
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
+                    final rentalFee = _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
 
                     final result = await fetchData(
                       from,
@@ -410,16 +477,33 @@ class HomePageState extends State<HomePage> {
                       highway,
                       viaList,
                     );
+
+                    // レンタカーとガソリン代の計算を追加
+                    double totalCost = result['total'].toDouble();
+                    // ガソリン代を計算（1kmあたり15円）
+                    final gasFee = result['distance'] * 15;
+                    
+                    if (_isRentalCar) {
+                      totalCost += rentalFee;
+                      if (_includeGasFee) {
+                        totalCost += gasFee;
+                      }
+                    } else {
+                      // 自家用車の場合は常にガソリン代を含める
+                      totalCost += gasFee;
+                    }
+
+                    final perPersonCost = totalCost / int.parse(number);
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder:
-                            (context) => ResultPage(
-                              perPersonAmount: result['perPerson'],
-                              peopleCount: result['people'],
-                              distance: result['distance'],
-                              groupId: _selectedGroupId,
-                            ),
+                        builder: (context) => ResultPage(
+                          perPersonAmount: perPersonCost.toInt(),
+                          peopleCount: result['people'],
+                          distance: result['distance'],
+                          groupId: _selectedGroupId,
+                        ),
                       ),
                     );
                   },
