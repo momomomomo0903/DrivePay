@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/fotter_menu.dart';
 
-class PaymentDetailPage extends StatelessWidget {
-  const PaymentDetailPage({super.key});
+class HistoryDetailPage extends StatelessWidget {
+  const HistoryDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
