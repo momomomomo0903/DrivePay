@@ -85,10 +85,6 @@ class MapDetailPage extends StatelessWidget {
                     maxHeight: MediaQuery.of(context).size.height * 0.45,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF45C4B0),
-                      width: 2,
-                    ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: ClipRRect(
