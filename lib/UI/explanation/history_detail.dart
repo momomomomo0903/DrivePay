@@ -118,7 +118,7 @@ class HistoryDetailPage extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    '過去のドライブを\n一覧で確認することができます。\n未徴収のものは一目でわかるので、清算漏れも防げます！\n思い出の記録としても便利です。',
+                    '過去のドライブを一覧で確認することができ、\n未徴収のものは赤く表示されます！\n思い出の記録としても便利です。',
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xFF666666),

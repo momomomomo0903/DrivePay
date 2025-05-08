@@ -104,7 +104,7 @@ class GroupDetailPage extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    '固定メンバーならグループ登録が便利！',
+                    '固定メンバーなら\nグループ登録が便利！',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -118,7 +118,7 @@ class GroupDetailPage extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'あらかじめグループを作成しておけば、いつものメンバーでの精算がもっと簡単に。\n滞納者リストも自動で反映されるので、毎回の入力の手間が省けます。\n仲間とのドライブをもっとスムーズに楽しめます',
+                    'あらかじめグループを作成しておけば、\nいつものメンバーでの精算がもっと簡単に。\n滞納者リストも自動で反映されるので、\n毎回の入力の手間が省けます！',
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xFF666666),

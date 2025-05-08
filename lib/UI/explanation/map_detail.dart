@@ -104,7 +104,7 @@ class MapDetailPage extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    '近くのガソリンスタンドをマップで簡単検索！',
+                    '近くのガソリンスタンドを\nマップで簡単検索！',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
