@@ -2,6 +2,9 @@
 
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
+import 'package:drivepay/UI/component/result/defaulter_list.dart';
+// import 'package:drivepay/UI/component/result/defaulter_list_group.dart';
+import 'package:drivepay/UI/home.dart';
 import 'package:drivepay/services/group_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +28,7 @@ class ResultPage extends StatefulWidget {
 }
 
 class _ResultPageState extends State<ResultPage> {
+
   List<String> _members = [];
 
   @override
@@ -56,7 +60,7 @@ class _ResultPageState extends State<ResultPage> {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 150, bottom: 100),
+                padding: const EdgeInsets.only(top: 120, bottom: 80),
                 decoration: const BoxDecoration(color: Color(0xFF45C4B0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +89,7 @@ class _ResultPageState extends State<ResultPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 40),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -151,6 +155,12 @@ class _ResultPageState extends State<ResultPage> {
                           ),
                         ),
                       ),
+
+                      const SizedBox(height: 35),
+                      DefaulterList(maxCount: widget.peopleCount),
+                      // DefaulterListGroup(maxCount: widget.peopleCount),
+                      const SizedBox(height: 35),
+                      
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -165,15 +175,14 @@ class _ResultPageState extends State<ResultPage> {
                         ],
                       ),
                       const SizedBox(height: 50),
+
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ToHomepageButton(),
-                            ShareIconButton(
-                              perPersonAmount: widget.perPersonAmount,
-                            ),
+                            ShareIconButton(perPersonAmount: widget.perPersonAmount),
                           ],
                         ),
                       ),
