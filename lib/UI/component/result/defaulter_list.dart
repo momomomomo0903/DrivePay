@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../checkbox.dart';
+import 'package:drivepay/services/group_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class NameItem {
   String name;
@@ -10,10 +12,12 @@ class NameItem {
 
 class DefaulterList extends StatefulWidget {
   final int maxCount;
+  final String? groupId;
   
   const DefaulterList({
     super.key,
     required this.maxCount,
+    this.groupId,
   });
 
   @override
@@ -21,15 +25,46 @@ class DefaulterList extends StatefulWidget {
 }
 
 class _DefaulterListState extends State<DefaulterList> {
-  final TextEditingController _nameController = TextEditingController();
   final List<NameItem> _names = [];
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.groupId != null) {
+      _loadGroupMembers();
+    }
+  }
 
   @override
   void dispose() {
-    _nameController.dispose();
     _scrollController.dispose();
+    _nameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadGroupMembers() async {
+    if (widget.groupId == null) return;
+    
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      final members = await GroupService.fetchGroupMembers(
+        uid: uid,
+        groupId: widget.groupId!,
+      );
+      
+      setState(() {
+        _names.clear();
+        for (var member in members) {
+          _names.add(NameItem(name: member));
+        }
+      });
+    } catch (e) {
+      debugPrint('グループメンバーの取得に失敗しました: $e');
+    }
   }
 
   void _addName() {
@@ -75,39 +110,41 @@ class _DefaulterListState extends State<DefaulterList> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 2),
-          Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      hintText: '名前を入力',
-                      hintStyle: TextStyle(color: Colors.white70),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+          if (widget.groupId == null) ...[
+            const SizedBox(height: 2),
+            Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _nameController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: '名前を入力',
+                        hintStyle: TextStyle(color: Colors.white70),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                       ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
+                      onSubmitted: (_) => _addName(),
                     ),
-                    onSubmitted: (_) => _addName(),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-                  onPressed: _addName,
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                    onPressed: _addName,
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 10),
           Container(
-            height: 130,
+            height: widget.groupId == null ? 130 : 180,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SingleChildScrollView(
@@ -142,14 +179,15 @@ class _DefaulterListState extends State<DefaulterList> {
                             ),
                           ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              _names.removeAt(entry.key);
-                            });
-                          },
-                        ),
+                        if (widget.groupId == null)
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.white),
+                            onPressed: () {
+                              setState(() {
+                                _names.removeAt(entry.key);
+                              });
+                            },
+                          ),
                       ],
                     ),
                   );

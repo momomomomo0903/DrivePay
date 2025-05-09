@@ -157,25 +157,12 @@ class _ResultPageState extends State<ResultPage> {
                       ),
 
                       const SizedBox(height: 35),
-                      DefaulterList(maxCount: widget.peopleCount),
-                      // DefaulterListGroup(maxCount: widget.peopleCount),
+                      DefaulterList(
+                        maxCount: widget.peopleCount,
+                        groupId: widget.groupId,
+                      ),
                       const SizedBox(height: 35),
                       
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          for (var member in _members)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Text(
-                                '$member,',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
                         child: Row(
