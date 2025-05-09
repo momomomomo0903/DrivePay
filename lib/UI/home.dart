@@ -188,6 +188,12 @@ class HomePageState extends State<HomePage> {
     _viaControllers.add(TextEditingController());
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
+    // グループと人数を初期化
+    setState(() {
+      _selectedGroupId = null;
+      _numberController.clear();
+    });
+
     if (uid != null && uid.isNotEmpty) {
       GroupService.fetchUserGroups(uid)
           .then((groups) {
