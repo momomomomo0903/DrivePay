@@ -16,7 +16,10 @@ class InputText extends StatelessWidget {
     required this.width,
     required this.controller,
     this.enabled = true,
-  }) : assert(label != null || icon != null, 'Either label or icon must be provided');
+  }) : assert(
+         label != null || icon != null,
+         'Either label or icon must be provided',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -30,18 +33,19 @@ class InputText extends StatelessWidget {
           children: [
             Container(
               width: 80,
-              height: 40,
+              height: 47,
               color: Color(0xFF45C4B0),
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               child: Center(
-                child: icon != null
-                  ? Icon(icon, color: Colors.white, size: 24)
-                  : Text(
-                      label!,
-                      style: const TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
+                child:
+                    icon != null
+                        ? Icon(icon, color: Colors.white, size: 24)
+                        : Text(
+                          label!,
+                          style: const TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
               ),
             ),
             Expanded(

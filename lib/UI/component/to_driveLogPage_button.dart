@@ -1,8 +1,8 @@
 import 'package:drivepay/UI/fotter_menu.dart';
 import 'package:flutter/material.dart';
 
-class ToHomepageButton extends StatelessWidget {
-  const ToHomepageButton({super.key});
+class ToDriveLogpageButton extends StatelessWidget {
+  const ToDriveLogpageButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +17,11 @@ class ToHomepageButton extends StatelessWidget {
       onPressed: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 1)),
           (route) => false,
         );
       },
-      child: const Text('ホームに戻る'),
+      child: const Text('戻る'),
     );
   }
 }

@@ -4,13 +4,20 @@ import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
 import 'package:drivepay/config/api_key.dart';
+import 'package:drivepay/state/auth_status.dart';
+import 'package:drivepay/state/home_status.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:drivepay/services/group_service.dart';
+import 'package:drivepay/UI/component/home/group_dropdown.dart';
 
 final String apiKey = ApiKeys.api_key;
+
 Future<Map<String, dynamic>> fetchData(
   String from,
   String to,
@@ -48,7 +55,8 @@ Future<Map<String, dynamic>> fetchData(
 
       final parkingFee = int.tryParse(parking ?? '') ?? 0;
       final highwayFee = int.tryParse(highway ?? '') ?? 0;
-      final sumFare = distanceKm * 15 + parkingFee + highwayFee;
+      // ガソリン代を別途計算するため、ここでは含めない
+      final sumFare = parkingFee + highwayFee;
       final perPersonFee = sumFare / int.parse(number);
 
       debugPrint(
@@ -73,21 +81,33 @@ Future<Map<String, dynamic>> fetchData(
   throw Exception('データの取得に失敗しました');
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
   @override
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
   final TextEditingController _parkingController = TextEditingController();
   final TextEditingController _highwayController = TextEditingController();
+  final TextEditingController _rentalFeeController = TextEditingController();
+
+  // グローバル変数をクラス変数に変更
+  List<Map<String, dynamic>> _groups = [];
+  String? _selectedGroupId;
+
+  // Firebase認証のリスナー登録用
+  StreamSubscription<User?>? _authStateSubscription;
 
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
+
+  // レンタカー関連の状態管理
+  bool _isRentalCar = false;
+  bool _includeGasFee = false; // ガソリン代を含めるかどうかのフラグ
 
   // エラーダイアログを表示する関数
   void _showErrorDialog(String message) {
@@ -174,10 +194,94 @@ class HomePageState extends State<HomePage> {
     super.initState();
     // 初期状態で経由1だけ追加
     _viaControllers.add(TextEditingController());
+
+    // Firebase認証の状態変化を監視
+    _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen((
+      User? user,
+    ) {
+      debugPrint('認証状態の変更を検知: ${user != null ? "ログイン中" : "未ログイン"}');
+      if (user != null && user.uid.isNotEmpty) {
+        _fetchGroups();
+      } else {
+        // ユーザーがnullの場合（ログアウト時）、グループ情報をクリア
+        if (mounted) {
+          setState(() {
+            _groups = [];
+            _selectedGroupId = null;
+          });
+        }
+      }
+    });
+
+    // 初期ロード時にもグループ取得を試みる
+    _fetchGroups();
+  }
+
+  @override
+  void dispose() {
+    // 認証状態のリスナーを解除
+    _authStateSubscription?.cancel();
+    // コントローラーの破棄
+    for (var controller in _viaControllers) {
+      controller.dispose();
+    }
+    _fromController.dispose();
+    _toController.dispose();
+    _numberController.dispose();
+    _parkingController.dispose();
+    _highwayController.dispose();
+    _rentalFeeController.dispose();
+    super.dispose();
+  }
+
+  // ログイン状態が変わったときの処理
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isLogin = ref.watch(isLoginProvider);
+    if (!isLogin) {
+      // Riverpodのログイン状態がfalseの場合、強制的にグループ情報をクリア
+      // これは認証状態の変更とは別に、UI側でのログイン状態の整合性を保つため
+      setState(() {
+        _groups = [];
+        _selectedGroupId = null;
+      });
+    }
+  }
+
+  // グループを取得する関数
+  void _fetchGroups() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null && uid.isNotEmpty) {
+      debugPrint('グループ情報の取得を開始: $uid');
+      GroupService.fetchUserGroups(uid)
+          .then((groups) {
+            if (mounted) {
+              // Widgetがまだマウントされているか確認
+              setState(() {
+                _groups = groups;
+                debugPrint('取得したグループ数: ${groups.length}');
+              });
+            }
+          })
+          .catchError((error) {
+            debugPrint('グループの取得に失敗しました: $error');
+          });
+    } else {
+      // uidがない場合はグループ情報をクリア
+      debugPrint('UIDが存在しないためグループ情報をクリア');
+      if (mounted) {
+        setState(() {
+          _groups = [];
+          _selectedGroupId = null;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLogin = ref.watch(isLoginProvider);
     return Scaffold(
       backgroundColor: Color(0xFFF6FFFE),
       body: SingleChildScrollView(
@@ -209,7 +313,7 @@ class HomePageState extends State<HomePage> {
                 width: MediaQuery.of(context).size.width - 32,
                 controller: _fromController,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
               // 複数の経由地を表示
               ..._viaControllers.asMap().entries.map((entry) {
@@ -271,7 +375,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               InputText(
                 label: '到着地',
                 hintText: '駅、バス停、住所、施設',
@@ -279,18 +383,138 @@ class HomePageState extends State<HomePage> {
                 controller: _toController,
               ),
               const SizedBox(height: 16),
-              InputText(
-                label: '乗車人数',
-                hintText: '',
-                width: 150,
-                controller: _numberController,
+              // ラベル行
+              Row(
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: Text(
+                      '乗車人数',
+                      style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0)),
+                    ),
+                  ),
+                  SizedBox(width: 17),
+                  _groups.isNotEmpty
+                      ? SizedBox(
+                        width: 150,
+                        child: Text(
+                          'グループを選択',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF45C4B0),
+                          ),
+                        ),
+                      )
+                      : SizedBox(width: 150),
+                ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 4),
+              // 入力行
+              Row(
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: InputText(
+                      label: '乗車人数',
+                      hintText: '',
+                      width: 150,
+                      controller: _numberController,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  _groups.isNotEmpty
+                      ? SizedBox(
+                        width: 150,
+                        child: GroupDropdown(
+                          groups: _groups,
+                          selectedGroupId: _selectedGroupId,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedGroupId = newValue;
+                              final selectedGroup = _groups.firstWhere(
+                                (group) => group['groupId'] == newValue,
+                                orElse: () => {},
+                              );
+                              if (selectedGroup.isNotEmpty &&
+                                  selectedGroup.length != null) {
+                                _numberController.text =
+                                    selectedGroup["members"].length.toString();
+                              }
+                            });
+                          },
+                        ),
+                      )
+                      : SizedBox(width: 150),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+              // レンタカー選択
+              Row(
+                children: [
+                  const Text('レンタカーですか？'),
+                  const SizedBox(width: 12),
+                  Row(
+                    children: [
+                      Radio<bool>(
+                        value: true,
+                        groupValue: _isRentalCar,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isRentalCar = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('はい'),
+                      Radio<bool>(
+                        value: false,
+                        groupValue: _isRentalCar,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isRentalCar = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('いいえ'),
+                    ],
+                  ),
+                ],
+              ),
+
+              // レンタカーが選択された場合の追加フィールド
+              if (_isRentalCar) ...[
+                const SizedBox(height: 10),
+                InputText(
+                  label: '借料',
+                  hintText: '円',
+                  width: 150,
+                  controller: _rentalFeeController,
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _includeGasFee,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _includeGasFee = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text('ガソリン代を計算に含める'),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 10),
+
               InputConditions(
                 parkingController: _parkingController,
                 highwayController: _highwayController,
               ),
-              const SizedBox(height: 50),
+
+              const SizedBox(height: 25),
+
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
@@ -305,30 +529,37 @@ class HomePageState extends State<HomePage> {
                     // バリデーションチェック
                     String? errorMessage;
 
-                    // 出発地と到着地のチェック
+                    // 既存のバリデーション
                     if (_fromController.text.isEmpty ||
                         _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
-                    }
-                    // 乗車人数のチェック
-                    else if (_numberController.text.isEmpty) {
+                    } else if (_numberController.text.isEmpty) {
                       errorMessage = '乗車人数を入力してください';
-                    }
-                    // 乗車人数の数値チェック
-                    else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+
+                      // 乗車人数の数値チェック
+                    } else if (!RegExp(
+                      r'^\d+$',
+                    ).hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
-                    }
-                    // 乗車人数の範囲チェック
-                    else if (int.parse(_numberController.text) <= 0) {
+                    } else if (int.parse(_numberController.text) <= 0) {
                       errorMessage = '乗車人数は1人以上で入力してください';
-                    }
-                    // 駐車場代と高速代の数値チェック（入力されている場合のみ）
-                    else if (_parkingController.text.isNotEmpty &&
+                    } else if (_parkingController.text.isNotEmpty &&
                         !RegExp(r'^\d+$').hasMatch(_parkingController.text)) {
                       errorMessage = '駐車場代は数値で入力してください';
                     } else if (_highwayController.text.isNotEmpty &&
                         !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
                       errorMessage = '高速代は数値で入力してください';
+                    }
+
+                    // レンタカー関連のバリデーション
+                    if (_isRentalCar) {
+                      if (_rentalFeeController.text.isEmpty) {
+                        errorMessage = 'レンタル代を入力してください';
+                      } else if (!RegExp(
+                        r'^\d+$',
+                      ).hasMatch(_rentalFeeController.text)) {
+                        errorMessage = 'レンタル代は数値で入力してください';
+                      }
                     }
 
                     if (errorMessage != null) {
@@ -348,6 +579,8 @@ class HomePageState extends State<HomePage> {
                     final number = _numberController.text;
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
+                    final rentalFee =
+                        _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
 
                     final result = await fetchData(
                       from,
@@ -357,14 +590,39 @@ class HomePageState extends State<HomePage> {
                       highway,
                       viaList,
                     );
+                    // レンタカーとガソリン代の計算を追加
+                    double totalCost = result['total'].toDouble();
+                    // ガソリン代を計算（1kmあたり15円）
+                    final gasFee = result['distance'] * 15;
+
+                    if (_isRentalCar) {
+                      totalCost += rentalFee;
+                      if (_includeGasFee) {
+                        totalCost += gasFee;
+                      }
+                    } else {
+                      // 自家用車の場合は常にガソリン代を含める
+                      totalCost += gasFee;
+                    }
+
+                    final perPersonCost = totalCost / int.parse(number);
+
+                    if (isLogin) {
+                      ref.read(fromProvider.notifier).state = from;
+                      ref.read(toProvider.notifier).state = to;
+                      ref.read(groupIdProvider.notifier).state =
+                          _selectedGroupId ?? '';
+                    }
+                    // 結果を表示するページに遷移
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder:
                             (context) => ResultPage(
-                              perPersonAmount: result['perPerson'],
+                              perPersonAmount: perPersonCost.toInt(),
                               peopleCount: result['people'],
                               distance: result['distance'],
+                              groupId: _selectedGroupId,
                             ),
                       ),
                     );
