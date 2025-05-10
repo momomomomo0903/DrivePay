@@ -12,6 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivepay/services/group_service.dart';
 import 'package:drivepay/UI/component/home/group_dropdown.dart';
+import  'package:drivepay/UI/error.dart';
 
 final String apiKey = ApiKeys.api_key;
 List<Map<String, dynamic>> _groups = [];
@@ -465,15 +466,8 @@ class HomePageState extends State<HomePage> {
                     }
 
                     if (errorMessage != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(errorMessage),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
+                     _showErrorDialog(errorMessage);
+                     return;}
                     // バリデーション成功時の処理
                     final from = _fromController.text;
                     final viaList = _viaControllers.map((c) => c.text).toList();

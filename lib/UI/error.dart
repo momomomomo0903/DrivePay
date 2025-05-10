@@ -1,6 +1,7 @@
- import 'package:flutter/material.dart';
- class Errorpage {
- void errorUI(BuildContext context,String errorMessage) {
+import 'package:flutter/material.dart';
+
+class Errorpage {
+  void errorUI(BuildContext context, String errorMessage) {
     showDialog(
       context: context,
       builder: (context) {
@@ -16,11 +17,11 @@
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
                   child: Text(
                     'エラーです',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xFF45C4B0),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -42,7 +43,7 @@
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
+                  child: const Text(
                     'はい',
                     style: TextStyle(
                       color: Colors.white,
