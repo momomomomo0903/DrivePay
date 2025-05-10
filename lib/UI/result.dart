@@ -2,11 +2,13 @@
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/component/result/defaulter_list.dart';
-// import 'package:drivepay/UI/component/result/defaulter_list_group.dart';
-import 'package:drivepay/UI/home.dart';
+import 'package:drivepay/logic/firebase.dart';
 import 'package:drivepay/services/group_service.dart';
+import 'package:drivepay/state/auth_status.dart';
+import 'package:drivepay/state/home_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ResultPage extends ConsumerStatefulWidget {
   final int perPersonAmount;
@@ -23,18 +25,10 @@ class ResultPage extends ConsumerStatefulWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final from = ref.watch(fromProvider);
-    final to = ref.watch(toProvider);
-    final groupId = ref.watch(groupIdProvider);
-    final isLogin = ref.watch(isLoginProvider);
-
-    int totalAmount = perPersonAmount * peopleCount;
-  State<ResultPage> createState() => _ResultPageState();
+  ConsumerState<ResultPage> createState() => _ResultPageState();
 }
 
-class _ResultPageState extends State<ResultPage> {
-
+class _ResultPageState extends ConsumerState<ResultPage> {
   List<String> _members = [];
 
   @override
@@ -54,17 +48,22 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final from = ref.watch(fromProvider);
     final to = ref.watch(toProvider);
-    final groupId = ref.watch(groupIdProvider);
     final isLogin = ref.watch(isLoginProvider);
 
-    int totalAmount = perPersonAmount * peopleCount;
     int totalAmount = widget.perPersonAmount * widget.peopleCount;
 
     if (isLogin) {
-      DB().firstAddDriveHistory(ref, from, to, distance, perPersonAmount, groupId);
+      DB().firstAddDriveHistory(
+        ref,
+        from,
+        to,
+        widget.distance,
+        widget.peopleCount,
+        widget.groupId ?? '',
+      );
     }
 
     return Scaffold(
@@ -178,14 +177,16 @@ class _ResultPageState extends State<ResultPage> {
                         groupId: widget.groupId,
                       ),
                       const SizedBox(height: 35),
-                      
+
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ToHomepageButton(),
-                            ShareIconButton(perPersonAmount: widget.perPersonAmount),
+                            ShareIconButton(
+                              perPersonAmount: widget.perPersonAmount,
+                            ),
                           ],
                         ),
                       ),
