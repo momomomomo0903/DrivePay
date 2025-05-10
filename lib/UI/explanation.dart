@@ -1,9 +1,11 @@
+// explanation.dart
 import 'package:flutter/material.dart';
 import 'package:drivepay/UI/explanation/fare_calculation_detail.dart';
 import 'package:drivepay/UI/explanation/payment_detail.dart';
 import 'package:drivepay/UI/explanation/map_detail.dart';
 import 'package:drivepay/UI/explanation/group_detail.dart';
 import 'package:drivepay/UI/explanation/history_detail.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 
 class ExplanationPage extends StatelessWidget {
   const ExplanationPage({super.key});
@@ -38,28 +40,73 @@ class ExplanationPage extends StatelessWidget {
               ),
               _buildSection(
                 context: context,
-                title: '3. マップ機能',
+                title: '3. ドライブ履歴',
+                content: '過去のドライブ履歴を確認することができます。',
+                icon: Icons.history,
+                detailPage: const HistoryDetailPage(),
+              ),
+              _buildSection(
+                context: context,
+                title: '4. マップ機能',
                 content: '現在地周辺のガソリンスタンドを地図上で素早く見つけることができます。',
                 icon: Icons.map,
                 detailPage: const MapDetailPage(),
               ),
               _buildSection(
                 context: context,
-                title: '4. グループ作成',
+                title: '5. グループ作成',
                 content: 'ログインすることで、グループを作成し、メンバーと料金を共有できます。',
                 icon: Icons.group,
                 detailPage: const GroupDetailPage(),
               ),
-              _buildSection(
-                context: context,
-                title: '5. ドライブ履歴',
-                content: '過去のドライブ履歴を確認することができます。',
-                icon: Icons.history,
-                detailPage: const HistoryDetailPage(),
-              ),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color(0xff45C4B0),
+        iconSize: 30,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.home_outlined),
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.groups_outlined),
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.map_outlined),
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Icon(Icons.brightness_low_rounded),
+            ),
+            label: '',
+          ),
+        ],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        currentIndex: 0,
+        onTap: (index) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+            (route) => false,
+          );
+        },
       ),
     );
   }
