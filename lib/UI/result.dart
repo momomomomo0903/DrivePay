@@ -30,6 +30,7 @@ class ResultPage extends ConsumerStatefulWidget {
 
 class _ResultPageState extends ConsumerState<ResultPage> {
   List<String> _members = [];
+  bool _hasAddedHistory = false;
 
   @override
   void initState() {
@@ -45,6 +46,30 @@ class _ResultPageState extends ConsumerState<ResultPage> {
         });
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _addDriveHistory();
+    });
+  }
+
+  void _addDriveHistory() {
+    if (_hasAddedHistory) return;
+
+    final isLogin = ref.read(isLoginProvider);
+    final from = ref.read(fromProvider);
+    final to = ref.read(toProvider);
+
+    if (isLogin) {
+      DB().firstAddDriveHistory(
+        ref,
+        from,
+        to,
+        widget.distance,
+        widget.perPersonAmount,
+        widget.groupId ?? '',
+      );
+      _hasAddedHistory = true;
+    }
   }
 
   @override
@@ -54,17 +79,6 @@ class _ResultPageState extends ConsumerState<ResultPage> {
     final isLogin = ref.watch(isLoginProvider);
 
     int totalAmount = widget.perPersonAmount * widget.peopleCount;
-
-    if (isLogin) {
-      DB().firstAddDriveHistory(
-        ref,
-        from,
-        to,
-        widget.distance,
-        widget.peopleCount,
-        widget.groupId ?? '',
-      );
-    }
 
     return Scaffold(
       backgroundColor: Colors.white,

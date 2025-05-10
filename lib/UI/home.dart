@@ -611,7 +611,7 @@ class HomePageState extends ConsumerState<HomePage> {
                       ref.read(fromProvider.notifier).state = from;
                       ref.read(toProvider.notifier).state = to;
                       ref.read(groupIdProvider.notifier).state =
-                          '1745671777187'; // rkt9tuba4develop@gmail.com内のグループIDを仮で利用
+                          _selectedGroupId ?? '';
                     }
                     // 結果を表示するページに遷移
                     Navigator.push(
