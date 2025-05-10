@@ -26,86 +26,160 @@ class _SettingPage extends ConsumerState<SettingPage> {
       children: [
         Container(
           width: double.infinity,
+          height: 360,
           margin: EdgeInsets.zero,
-          padding: const EdgeInsets.only(top: 10, bottom: 20),
+          alignment: Alignment.topCenter,
+          padding: const EdgeInsets.only(top: 10, bottom: 20,),
           decoration: const BoxDecoration(color: Color(0xFFDCFFF9)),
-          child: Stack(
-            alignment: Alignment.topCenter,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // 円形の画像
-              Container(
-                width: 100,
-                height: 100,
-                padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
               // メインカード
               Padding(
-                padding: const EdgeInsets.only(top: 120),
+                padding: const EdgeInsets.only(top: 10),
                 child: Container(
-                  width: 270,
-                  height: 160,
+                  margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF45C4B0),
-                    borderRadius: BorderRadius.circular(12),
+                    color: Color(0xFFF6FFFE),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Color(0xFF45C4B0), width: 2),
                   ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '名前:$userName\nメールアドレス:$eMail',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // メールアドレス
+                      Text("メールアドレス", style: TextStyle(
+                        color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
+                      SizedBox(height: 1),
+                      Container(
+                        width: double.infinity,
+                        height: 40,
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFD1F3EF),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          eMail,
+                          style: TextStyle(
+                            color: Color(0xFF45C4B0),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
-                          SizedBox(height: 12),
-                          !isLogin
-                              ? ElevatedButton(
-                                onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => AuthLoginPage(),
-                                  //   ),
-                                  // );
-                                  GoogleSignin.signInWithGoogle(ref, context);
-                                },
-                                // child: Text("ログイン"),
-                                child: Text("Googleでログイン"),
-                              )
-                              : ElevatedButton(
-                                onPressed: () {
-                                  AuthLogout.LogoutLogic(ref, context);
-
-                                  debugPrint(
-                                    'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
-                                  );
-                                },
-                                child: Text("ログアウト"),
-                              ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      // 名前
+                      Row(
+                        children: [
+                          Text("名前", style: TextStyle(
+                            color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
+                          SizedBox(width: 4),
+                          Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
                         ],
                       ),
-                    ),
+                      SizedBox(height: 1),
+                      Container(
+                        width: double.infinity,
+                        height: 40,
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFD1F3EF),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          userName,
+                          style: TextStyle(
+                            color: Color(0xFF45C4B0),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      // 燃費
+                      Row(
+                        children: [
+                          Text("自家用車の燃費", style: TextStyle(
+                            color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
+                          SizedBox(width: 4),
+                          Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                        ],
+                      ),
+                      SizedBox(height: 1),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFD1F3EF),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    "00.0",
+                                    style: TextStyle(
+                                      color: Color(0xFF45C4B0),
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text("Km/L", style: TextStyle(
+                                  color: Color(0xFF45C4B0), fontSize: 24, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF7ED6C1),
+                              foregroundColor: Colors.white,
+                              shape: StadiumBorder(),
+                            ),
+                            onPressed: () {},
+                            child: Text("変更を保存", style: TextStyle(fontSize: 14)),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
+              // ログインボタン
+              Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: !isLogin
+                ? ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF45C4B0),
+                  ),
+                  onPressed: () {
+                  GoogleSignin.signInWithGoogle(ref, context);
+                  },
+                  child: Text("Googleでログイン"),
+                  )
+                  : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF45C4B0),
+                    ),
+                    onPressed: () {
+                      AuthLogout.LogoutLogic(ref, context);
+                      debugPrint(
+                        'loginName:${ref.watch(userNameProvider)},Email:${ref.watch(eMailProvider)},isLogin:${ref.watch(isLoginProvider)}}',
+                      );
+                    },
+                    child: Text("ログアウト"),
+                  ),
+               ),
+             ],
+            ),
           ),
-        ),
         const SizedBox(height: 50),
         Expanded(
           child: Padding(
