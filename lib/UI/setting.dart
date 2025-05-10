@@ -6,6 +6,8 @@ import 'package:drivepay/UI/component/webViewPage.dart';
 import 'package:drivepay/state/auth_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
+import 'package:drivepay/UI/drivehistory.dart';
+import 'package:drivepay/UI/explanation.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -34,18 +36,14 @@ class _SettingPage extends ConsumerState<SettingPage> {
               Container(
                 width: 100,
                 height: 100,
+                padding: const EdgeInsets.all(6),
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    'assets/images/profile.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
                 ),
               ),
               // メインカード
@@ -238,6 +236,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToHistory(BuildContext context) {
     Navigator.push(
       context,
+
       MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 1)),
     );
   }
@@ -245,7 +244,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
   void _navigateToInfomation(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Firstpage()),
+      MaterialPageRoute(builder: (context) => const ExplanationPage()),
     );
   }
 

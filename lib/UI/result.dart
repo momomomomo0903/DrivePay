@@ -1,22 +1,25 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
-import 'package:drivepay/logic/firebase.dart';
-import 'package:drivepay/state/auth_status.dart';
-import 'package:drivepay/state/home_status.dart';
+import 'package:drivepay/UI/component/result/defaulter_list.dart';
+// import 'package:drivepay/UI/component/result/defaulter_list_group.dart';
+import 'package:drivepay/UI/home.dart';
+import 'package:drivepay/services/group_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ResultPage extends ConsumerWidget {
+class ResultPage extends ConsumerStatefulWidget {
   final int perPersonAmount;
   final int peopleCount;
   final double distance;
+  final String? groupId;
 
   const ResultPage({
     super.key,
     required this.perPersonAmount,
     required this.peopleCount,
     required this.distance,
+    this.groupId,
   });
 
   @override
@@ -27,6 +30,38 @@ class ResultPage extends ConsumerWidget {
     final isLogin = ref.watch(isLoginProvider);
 
     int totalAmount = perPersonAmount * peopleCount;
+  State<ResultPage> createState() => _ResultPageState();
+}
+
+class _ResultPageState extends State<ResultPage> {
+
+  List<String> _members = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || widget.groupId == null) return;
+    {
+      GroupService.fetchGroupMembers(uid: uid, groupId: widget.groupId!).then((
+        members,
+      ) {
+        setState(() {
+          _members = members;
+        });
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final from = ref.watch(fromProvider);
+    final to = ref.watch(toProvider);
+    final groupId = ref.watch(groupIdProvider);
+    final isLogin = ref.watch(isLoginProvider);
+
+    int totalAmount = perPersonAmount * peopleCount;
+    int totalAmount = widget.perPersonAmount * widget.peopleCount;
 
     if (isLogin) {
       DB().firstAddDriveHistory(ref, from, to, distance, perPersonAmount, groupId);
@@ -41,7 +76,7 @@ class ResultPage extends ConsumerWidget {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 150, bottom: 100),
+                padding: const EdgeInsets.only(top: 120, bottom: 80),
                 decoration: const BoxDecoration(color: Color(0xFF45C4B0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -58,7 +93,7 @@ class ResultPage extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          '¥$perPersonAmount',
+                          '¥${widget.perPersonAmount}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 70,
@@ -70,7 +105,7 @@ class ResultPage extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 40),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -91,7 +126,7 @@ class ResultPage extends ConsumerWidget {
                           ),
                         ),
                         child: Text(
-                          '距離　　　　${distance.toStringAsFixed(1)} Km',
+                          '距離　　　　${widget.distance.toStringAsFixed(1)} Km',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -112,7 +147,7 @@ class ResultPage extends ConsumerWidget {
                           ),
                         ),
                         child: Text(
-                          '一人　　　　${perPersonAmount}円 × ${peopleCount}人',
+                          '一人　　　　${widget.perPersonAmount}円 × ${widget.peopleCount}人',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -137,14 +172,20 @@ class ResultPage extends ConsumerWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 35),
+                      DefaulterList(
+                        maxCount: widget.peopleCount,
+                        groupId: widget.groupId,
+                      ),
+                      const SizedBox(height: 35),
+                      
                       Padding(
                         padding: const EdgeInsets.only(left: 40),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ToHomepageButton(),
-                            ShareIconButton(perPersonAmount: perPersonAmount),
+                            ShareIconButton(perPersonAmount: widget.perPersonAmount),
                           ],
                         ),
                       ),
