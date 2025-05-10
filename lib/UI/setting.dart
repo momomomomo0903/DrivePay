@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
 import 'package:drivepay/UI/drivehistory.dart';
 import 'package:drivepay/UI/explanation.dart';
+import 'package:drivepay/logic/firebase.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -17,11 +18,45 @@ class SettingPage extends ConsumerStatefulWidget {
 }
 
 class _SettingPage extends ConsumerState<SettingPage> {
+  bool isEditingName = false;
+  bool isEditingFuelEfficiency = false;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController fuelEfficiencyController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = ref.read(userNameProvider);
+    fuelEfficiencyController.text = ref.read(fuelEfficiencyProvider);
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    fuelEfficiencyController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveChanges() async {
+    if (isEditingName) {
+      ref.read(userNameProvider.notifier).state = nameController.text;
+    }
+    if (isEditingFuelEfficiency) {
+      ref.read(fuelEfficiencyProvider.notifier).state = fuelEfficiencyController.text;
+    }
+    await DB.dataBaseUpdateWrite(ref);
+    setState(() {
+      isEditingName = false;
+      isEditingFuelEfficiency = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLogin = ref.watch(isLoginProvider);
     final userName = ref.watch(userNameProvider);
     final eMail = ref.watch(eMailProvider);
+    final fuelEfficiency = ref.watch(fuelEfficiencyProvider);
     return Column(
       children: [
         Container(
@@ -76,7 +111,17 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           Text("名前", style: TextStyle(
                             color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
                           SizedBox(width: 4),
-                          Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                isEditingName = !isEditingName;
+                                if (!isEditingName) {
+                                  nameController.text = ref.read(userNameProvider);
+                                }
+                              });
+                            },
+                            child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                          ),
                         ],
                       ),
                       SizedBox(height: 1),
@@ -88,14 +133,26 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           color: Color(0xFFD1F3EF),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(
-                          userName,
-                          style: TextStyle(
-                            color: Color(0xFF45C4B0),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: isEditingName
+                            ? TextField(
+                                controller: nameController,
+                                style: TextStyle(
+                                  color: Color(0xFF45C4B0),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                ),
+                              )
+                            : Text(
+                                userName,
+                                style: TextStyle(
+                                  color: Color(0xFF45C4B0),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                       SizedBox(height: 8),
                       // 燃費
@@ -104,7 +161,17 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           Text("車の燃費", style: TextStyle(
                             color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
                           SizedBox(width: 4),
-                          Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                isEditingFuelEfficiency = !isEditingFuelEfficiency;
+                                if (!isEditingFuelEfficiency) {
+                                  fuelEfficiencyController.text = ref.read(fuelEfficiencyProvider);
+                                }
+                              });
+                            },
+                            child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                          ),
                         ],
                       ),
                       SizedBox(height: 1),
@@ -119,14 +186,37 @@ class _SettingPage extends ConsumerState<SettingPage> {
                                     color: Color(0xFFD1F3EF),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Text(
-                                    "11.3",
-                                    style: TextStyle(
-                                      color: Color(0xFF45C4B0),
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                                  child: isEditingFuelEfficiency
+                                      ? Container(
+                                          width: 55,
+                                          height: 35,
+                                          child: TextField(
+                                            controller: fuelEfficiencyController,
+                                            style: TextStyle(
+                                              color: Color(0xFF45C4B0),
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                            keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              contentPadding: EdgeInsets.zero,
+                                              isDense: true,
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
+                                          width: 55,
+                                          height: 35,
+                                          child: Text(
+                                            fuelEfficiency,
+                                            style: TextStyle(
+                                              color: Color(0xFF45C4B0),
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
                                 ),
                                 SizedBox(width: 8),
                                 Text("Km/L", style: TextStyle(
@@ -134,15 +224,16 @@ class _SettingPage extends ConsumerState<SettingPage> {
                               ],
                             ),
                           ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF7ED6C1),
-                              foregroundColor: Colors.white,
-                              shape: StadiumBorder(),
+                          if (isEditingName || isEditingFuelEfficiency)
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF7ED6C1),
+                                foregroundColor: Colors.white,
+                                shape: StadiumBorder(),
+                              ),
+                              onPressed: _saveChanges,
+                              child: Text("変更を保存", style: TextStyle(fontSize: 14)),
                             ),
-                            onPressed: () {},
-                            child: Text("変更を保存", style: TextStyle(fontSize: 14)),
-                          ),
                         ],
                       ),
                     ],

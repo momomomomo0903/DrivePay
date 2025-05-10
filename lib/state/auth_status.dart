@@ -10,3 +10,4 @@ final isLoginProvider = StateProvider<bool>((ref) => false); // ログインし�
 final userNameProvider = StateProvider<String>((ref) => "ゲスト"); // ユーザー名
 final userIdProvider = StateProvider<String>((ref) => "Null"); // ユーザーID
 final eMailProvider = StateProvider<String>((ref) => "ログインしてください"); // メール
+final fuelEfficiencyProvider = StateProvider<String>((ref) => "11.3"); // 燃費
