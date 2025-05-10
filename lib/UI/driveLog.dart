@@ -194,12 +194,15 @@ class _DriveLogPageState extends ConsumerState<DriveLogPage> {
                                       ],
                                     ),
                                     const SizedBox(width: 8.0),
-                                    Text(
-                                      '${item[1]} → ${item[2]}',
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                    Flexible(
+                                      child: Text(
+                                        '${item[1]} → ${item[2]}',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ],
