@@ -112,18 +112,20 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           children: [
                             Text("名前", style: TextStyle(
                               color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
-                            SizedBox(width: 4),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  isEditingName = !isEditingName;
-                                  if (!isEditingName) {
-                                    nameController.text = ref.read(userNameProvider);
-                                  }
-                                });
-                              },
-                              child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
-                            ),
+                            if (isLogin) ...[
+                              SizedBox(width: 4),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isEditingName = !isEditingName;
+                                    if (!isEditingName) {
+                                      nameController.text = ref.read(userNameProvider);
+                                    }
+                                  });
+                                },
+                                child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                              ),
+                            ],
                           ],
                         ),
                         SizedBox(height: 1),
@@ -162,18 +164,20 @@ class _SettingPage extends ConsumerState<SettingPage> {
                           children: [
                             Text("車の燃費", style: TextStyle(
                               color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
-                            SizedBox(width: 4),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  isEditingFuelEfficiency = !isEditingFuelEfficiency;
-                                  if (!isEditingFuelEfficiency) {
-                                    fuelEfficiencyController.text = ref.read(fuelEfficiencyProvider);
-                                  }
-                                });
-                              },
-                              child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
-                            ),
+                            if (isLogin) ...[
+                              SizedBox(width: 4),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isEditingFuelEfficiency = !isEditingFuelEfficiency;
+                                    if (!isEditingFuelEfficiency) {
+                                      fuelEfficiencyController.text = ref.read(fuelEfficiencyProvider);
+                                    }
+                                  });
+                                },
+                                child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                              ),
+                            ],
                           ],
                         ),
                         SizedBox(height: 1),
