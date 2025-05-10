@@ -113,6 +113,7 @@ class DB {
               data['groupId'] ?? '',
               data['member'] ?? [],
               data['memo'] ?? '',
+              data['docId'] ?? doc.id,
             ];
           }).toList();
       ref.read(historyItemProvider.notifier).state =
@@ -136,7 +137,7 @@ class DB {
     String endPlace,
     double distance,
     int money,
-    String groupId,
+    String groupId
   ) async {
     try {
       final uid = ref.watch(userIdProvider);
@@ -164,11 +165,12 @@ class DB {
       final memberList =
           members.map((name) => {'name': name, 'paid': false}).toList();
 
-      await FirebaseFirestore.instance
+      final docRef = FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .collection('drivelog')
-          .add({
+          .doc();
+      await docRef.set({
             'date': FieldValue.serverTimestamp(),
             'startPlace': startPlace,
             'endPlace': endPlace,
@@ -177,6 +179,7 @@ class DB {
             'groupId': groupId,
             'member': memberList,
             'memo': '',
+            'docId': docRef.id.toString(),
           });
       await getHistoryItems(ref);
 
@@ -184,6 +187,26 @@ class DB {
     } catch (e) {
       debugPrint('書き込みエラー: $e');
       rethrow;
+    }
+  }
+
+  static Future<void> writeMemo(WidgetRef ref,{
+    required item,
+  }) async {
+    try {
+      final uid = ref.read(userIdProvider);
+      final firestore = FirebaseFirestore.instance;
+
+      await firestore
+          .collection('users')
+          .doc(uid)
+          .collection('drivelog')
+          .doc(item[8])
+          .update({'memo': item[7]});
+
+      debugPrint('メモ更新成功');
+    } catch (e) {
+      debugPrint('メモ更新失敗: $e');
     }
   }
 }

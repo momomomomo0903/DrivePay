@@ -1,5 +1,6 @@
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/to_driveLogPage_button.dart';
+import 'package:drivepay/UI/memoInput.dart';
 import 'package:flutter/material.dart';
 
 class DrivelogCard extends StatelessWidget {
@@ -115,6 +116,33 @@ class DrivelogCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: Color(0xff8F8F8F),
                       ),
+                    ),
+                  ),
+                  Container(
+                    width: 300,
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
+                    child: Column(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MemoInputPage(item: item),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            '編集',
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        Text('${item[7]}'),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 50),
