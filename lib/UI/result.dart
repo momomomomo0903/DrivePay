@@ -121,7 +121,7 @@ class _ResultPageState extends ConsumerState<ResultPage> {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 120, bottom: 80),
+                padding: const EdgeInsets.only(top: 64, bottom: 80),
                 decoration: const BoxDecoration(color: Color(0xFF45C4B0)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
