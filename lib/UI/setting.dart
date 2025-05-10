@@ -101,7 +101,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                       // 燃費
                       Row(
                         children: [
-                          Text("自家用車の燃費", style: TextStyle(
+                          Text("車の燃費", style: TextStyle(
                             color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
                           SizedBox(width: 4),
                           Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
@@ -120,7 +120,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
-                                    "00.0",
+                                    "11.3",
                                     style: TextStyle(
                                       color: Color(0xFF45C4B0),
                                       fontSize: 24,
