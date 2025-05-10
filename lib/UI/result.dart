@@ -9,6 +9,7 @@ import 'package:drivepay/state/home_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drivepay/UI/fotter_menu.dart';
 
 class ResultPage extends ConsumerStatefulWidget {
   final int perPersonAmount;
@@ -98,6 +99,21 @@ class _ResultPageState extends ConsumerState<ResultPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF45C4B0),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen()),
+              (route) => false,
+            );
+          },
+        ),
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -334,7 +350,7 @@ class _ResultPageState extends ConsumerState<ResultPage> {
                       const SizedBox(height: 35),
 
                       Padding(
-                        padding: const EdgeInsets.only(left: 40),
+                        padding: const EdgeInsets.only(left: 40, bottom: 50),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
