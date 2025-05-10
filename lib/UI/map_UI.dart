@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:drivepay/logic/map_logic.dart';
+import 'package:drivepay/UI/Error.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -92,11 +93,9 @@ class _MapPageState extends State<MapPage> {
               if (address != null) {
                 await _mapLogic.showPlaceDetailsFromMarker(context, address);
               } else {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('住所の取得に失敗しました')));
+                
               }
-            }
+            }Errorpage().errorUI(context,'住所の取得に失敗しました');
           },
         ),
         ElevatedButton(
@@ -172,20 +171,7 @@ class _MapPageState extends State<MapPage> {
                         final destination = _destinationController.text;
 
                         if (destination.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: Text('エラー'),
-                                  content: Text('目的地を入力してください'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
+                          Errorpage().errorUI(context,'目的地を入力してください');
                           return;
                         }
 
@@ -210,20 +196,7 @@ class _MapPageState extends State<MapPage> {
                         final destination = _destinationController.text;
 
                         if (destination.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: Text('エラー'),
-                                  content: Text('目的地を入力してください'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
+                          Errorpage().errorUI(context,'目的地を入力してください');
                           return;
                         }
 

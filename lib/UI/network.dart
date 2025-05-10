@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'error.dart'; 
 class NetworkUI {
   // ネットワーク接続がされていない際のUI
-  void showNetworkError(BuildContext context){
-    Errorpage().errorUI(context,'インターネットに失敗しました。');
-    }
-  Widget networkErrorUI(BuildContext context) {
+   Widget networkErrorUI(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -37,17 +33,30 @@ class NetworkUI {
                     fit: BoxFit.contain,
                   ),
                 ],
-              ),
-              const SizedBox(height: 15),
-                const Text( "ネットワーク接続がされていません",
-                style: TextStyle(fontSize: 15),
-                textAlign: TextAlign.center,),
-                const SizedBox(height: 10),
-                const Text(
+              ), 
+              SizedBox(height: 15),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Text(
+                        "ネットワーク接続がされていません",
+                        style: TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(   
                       "ネットワーク状況を確認してください",
                       style: TextStyle(fontSize: 18),
-                      textAlign: TextAlign.center,   
-                ),
+                       textAlign: TextAlign.center,
+                    ),
+                   ],
+                  ),
+                    ),
+              Padding(padding: const EdgeInsets.only(top: 80, bottom: 20)),
             ],
           ),
         ),
@@ -55,3 +64,5 @@ class NetworkUI {
     );
   }
 }
+
+            

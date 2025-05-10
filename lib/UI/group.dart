@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/createGroup.dart';
@@ -8,21 +7,17 @@ import 'package:drivepay/UI/component/group_card.dart';
 import 'package:drivepay/UI/component/list_modal.dart';
 import 'package:drivepay/UI/component/confirm_dialog.dart';
 import 'package:drivepay/UI/component/edit_list_dialog.dart';
-
 class GroupPage extends ConsumerStatefulWidget {
   const GroupPage({super.key});
-
   @override
   ConsumerState<GroupPage> createState() => _GroupPageState();
 }
-
 class _GroupPageState extends ConsumerState<GroupPage> {
   @override
   Widget build(BuildContext context) {
     final groupState = ref.watch(groupControllerProvider);
     // ignore: unused_local_variable
     final controller = ref.read(groupControllerProvider.notifier);
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -55,42 +50,14 @@ class _GroupPageState extends ConsumerState<GroupPage> {
           ? const Center(child: CircularProgressIndicator())
           : groupState.groups.isEmpty
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'グループがありません\n右下の+ボタンから作成してください',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
+                 child: Text(
+                    'グループがありません\n右下の+ボタンから作成してください',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
                       ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('確認'),
-                              content: const Text('はい'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        child: const Text('ダイアログを表示'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff45c4b0),
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
                 )
               : ListView.builder(
                   itemCount: groupState.groups.length,
@@ -134,7 +101,6 @@ class _GroupPageState extends ConsumerState<GroupPage> {
                 ),
     );
   }
-
   void _showDeleteConfirmDialog(String groupId, String groupName) {
     showDialog(
       context: context,
@@ -167,7 +133,6 @@ class _GroupPageState extends ConsumerState<GroupPage> {
       ),
     );
   }
-
   void _showMembersModal(List<String> members) {
     showDialog(
       context: context,
@@ -178,7 +143,6 @@ class _GroupPageState extends ConsumerState<GroupPage> {
       ),
     );
   }
-
   void _showEditGroupDialog(Map<String, dynamic> group) {
     showDialog(
       context: context,

@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
-
 import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
@@ -12,12 +10,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivepay/services/group_service.dart';
 import 'package:drivepay/UI/component/home/group_dropdown.dart';
-import  'package:drivepay/UI/error.dart';
-
 final String apiKey = ApiKeys.api_key;
 List<Map<String, dynamic>> _groups = [];
 String? _selectedGroupId = null;
-
 Future<Map<String, dynamic>> fetchData(
   String from,
   String to,
@@ -31,7 +26,6 @@ Future<Map<String, dynamic>> fetchData(
     final String viaString = viaList.join('|');
     final String waypointsParam =
         viaString.isNotEmpty ? '&waypoints=$viaString' : '';
-
     final Uri uri = Uri.parse(
       "https://maps.googleapis.com/maps/api/directions/json"
       "?origin=${Uri.encodeComponent(from)}"
@@ -39,26 +33,20 @@ Future<Map<String, dynamic>> fetchData(
       "$waypointsParam"
       "&key=$apiKey",
     );
-
     final response = await http.get(uri);
-
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-
       // すべての legs の距離を合算
       double totalDistanceMeters = 0;
       for (var leg in data['routes'][0]['legs']) {
         totalDistanceMeters += leg['distance']['value'];
       }
-
       final distanceKm = totalDistanceMeters / 1000.0;
-
       final parkingFee = int.tryParse(parking ?? '') ?? 0;
       final highwayFee = int.tryParse(highway ?? '') ?? 0;
       // ガソリン代を別途計算するため、ここでは含めない
       final sumFare = parkingFee + highwayFee;
       final perPersonFee = sumFare / int.parse(number);
-
       debugPrint(
         "✅ 合計料金（円）: ${sumFare.toStringAsFixed(1)}\n"
         "一人当たりの料金: ${perPersonFee.toStringAsFixed(1)}\n"
@@ -77,16 +65,13 @@ Future<Map<String, dynamic>> fetchData(
     debugPrint('エラー: $e');
     rethrow;
   }
-
   throw Exception('データの取得に失敗しました');
 }
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
   HomePageState createState() => HomePageState();
 }
-
 class HomePageState extends State<HomePage> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
@@ -94,14 +79,11 @@ class HomePageState extends State<HomePage> {
   final TextEditingController _parkingController = TextEditingController();
   final TextEditingController _highwayController = TextEditingController();
   final TextEditingController _rentalFeeController = TextEditingController();
-
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
-
   // レンタカー関連の状態管理
   bool _isRentalCar = false;
   bool _includeGasFee = false;  // ガソリン代を含めるかどうかのフラグ
-
   // エラーダイアログを表示する関数
   void _showErrorDialog(String message) {
     showDialog(
@@ -122,7 +104,6 @@ class HomePageState extends State<HomePage> {
       },
     );
   }
-
   // 現在地を取得する関数
   Future<void> getCurrentLocation() async {
     try {
@@ -132,7 +113,6 @@ class HomePageState extends State<HomePage> {
         _showErrorDialog('位置情報サービスが無効になっています。\n設定から位置情報を有効にしてください。');
         return;
       }
-
       // 位置情報の権限をチェック
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -142,25 +122,21 @@ class HomePageState extends State<HomePage> {
           return;
         }
       }
-
       if (permission == LocationPermission.deniedForever) {
         _showErrorDialog('位置情報の利用が永久に拒否されています。\n設定アプリから位置情報の利用を許可してください。');
         return;
       }
-
       // 位置情報を取得
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10), // タイムアウトを10秒に設定
       );
-
       // 住所に変換
       final response = await http.get(
         Uri.parse(
           'https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$apiKey&language=ja',
         ),
       );
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == 'OK' && data['results'].isNotEmpty) {
@@ -181,14 +157,12 @@ class HomePageState extends State<HomePage> {
       }
     }
   }
-
   @override
   void initState() {
     super.initState();
     // 初期状態で経由1だけ追加
     _viaControllers.add(TextEditingController());
     final uid = FirebaseAuth.instance.currentUser?.uid;
-
     if (uid != null && uid.isNotEmpty) {
       GroupService.fetchUserGroups(uid)
           .then((groups) {
@@ -201,7 +175,6 @@ class HomePageState extends State<HomePage> {
           });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -236,7 +209,6 @@ class HomePageState extends State<HomePage> {
                 controller: _fromController,
               ),
               const SizedBox(height: 10),
-
               // 複数の経由地を表示
               ..._viaControllers.asMap().entries.map((entry) {
                 final index = entry.key;
@@ -296,7 +268,6 @@ class HomePageState extends State<HomePage> {
                   style: TextStyle(color: Color(0xFF45C4B0)),
                 ),
               ),
-
               const SizedBox(height: 10),
               InputText(
                 label: '到着地',
@@ -354,7 +325,6 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 10),
               // レンタカー選択
               Row(
@@ -387,7 +357,6 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-
               // レンタカーが選択された場合の追加フィールド
               if (_isRentalCar) ...[
                 const SizedBox(height: 10),
@@ -412,16 +381,12 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
               ],
-
               const SizedBox(height: 10),
-
               InputConditions(
                 parkingController: _parkingController,
                 highwayController: _highwayController,
               ),
-
               const SizedBox(height: 25),
-
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
@@ -435,16 +400,13 @@ class HomePageState extends State<HomePage> {
                   onPressed: () async {
                     // バリデーションチェック
                     String? errorMessage;
-
                     // 既存のバリデーション
                     if (_fromController.text.isEmpty || _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
                     } else if (_numberController.text.isEmpty) {
                       errorMessage = '乗車人数を入力してください';
-
                       // 乗車人数の数値チェック
                     } else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
-
                       errorMessage = '乗車人数は数値で入力してください';
                     } else if (int.parse(_numberController.text) <= 0) {
                       errorMessage = '乗車人数は1人以上で入力してください';
@@ -455,7 +417,6 @@ class HomePageState extends State<HomePage> {
                         !RegExp(r'^\d+$').hasMatch(_highwayController.text)) {
                       errorMessage = '高速代は数値で入力してください';
                     }
-
                     // レンタカー関連のバリデーション
                     if (_isRentalCar) {
                       if (_rentalFeeController.text.isEmpty) {
@@ -466,9 +427,15 @@ class HomePageState extends State<HomePage> {
                     }
 
                     if (errorMessage != null) {
-                     _showErrorDialog(errorMessage);
-                     return;}
-                    // バリデーション成功時の処理
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(errorMessage),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                     // バリデーション成功時の処理
                     final from = _fromController.text;
                     final viaList = _viaControllers.map((c) => c.text).toList();
                     final to = _toController.text;
@@ -476,7 +443,6 @@ class HomePageState extends State<HomePage> {
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
                     final rentalFee = _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
-
                     final result = await fetchData(
                       from,
                       to,
@@ -485,7 +451,6 @@ class HomePageState extends State<HomePage> {
                       highway,
                       viaList,
                     );
-
                     // レンタカーとガソリン代の計算を追加
                     double totalCost = result['total'].toDouble();
                     // ガソリン代を計算（1kmあたり15円）
@@ -500,9 +465,7 @@ class HomePageState extends State<HomePage> {
                       // 自家用車の場合は常にガソリン代を含める
                       totalCost += gasFee;
                     }
-
                     final perPersonCost = totalCost / int.parse(number);
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -525,3 +488,4 @@ class HomePageState extends State<HomePage> {
     );
   }
 }
+
