@@ -75,168 +75,178 @@ class _SettingPage extends ConsumerState<SettingPage> {
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   padding: EdgeInsets.all(24),
+                  height: 255,
                   decoration: BoxDecoration(
                     color: Color(0xFFF6FFFE),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: Color(0xFF45C4B0), width: 2),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // メールアドレス
-                      Text("メールアドレス", style: TextStyle(
-                        color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
-                      SizedBox(height: 1),
-                      Container(
-                        width: double.infinity,
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Color(0xFFD1F3EF),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          eMail,
-                          style: TextStyle(
-                            color: Color(0xFF45C4B0),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // メールアドレス
+                        Text("メールアドレス", style: TextStyle(
+                          color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
+                        SizedBox(height: 1),
+                        Container(
+                          width: double.infinity,
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFD1F3EF),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            eMail,
+                            style: TextStyle(
+                              color: Color(0xFF45C4B0),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      // 名前
-                      Row(
-                        children: [
-                          Text("名前", style: TextStyle(
-                            color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
-                          SizedBox(width: 4),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isEditingName = !isEditingName;
-                                if (!isEditingName) {
-                                  nameController.text = ref.read(userNameProvider);
-                                }
-                              });
-                            },
-                            child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 1),
-                      Container(
-                        width: double.infinity,
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Color(0xFFD1F3EF),
-                          borderRadius: BorderRadius.circular(10),
+                        SizedBox(height: 8),
+                        // 名前
+                        Row(
+                          children: [
+                            Text("名前", style: TextStyle(
+                              color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
+                            SizedBox(width: 4),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isEditingName = !isEditingName;
+                                  if (!isEditingName) {
+                                    nameController.text = ref.read(userNameProvider);
+                                  }
+                                });
+                              },
+                              child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                            ),
+                          ],
                         ),
-                        child: isEditingName
-                            ? TextField(
-                                controller: nameController,
-                                style: TextStyle(
-                                  color: Color(0xFF45C4B0),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                ),
-                              )
-                            : Text(
-                                userName,
-                                style: TextStyle(
-                                  color: Color(0xFF45C4B0),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
-                      SizedBox(height: 8),
-                      // 燃費
-                      Row(
-                        children: [
-                          Text("車の燃費", style: TextStyle(
-                            color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
-                          SizedBox(width: 4),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isEditingFuelEfficiency = !isEditingFuelEfficiency;
-                                if (!isEditingFuelEfficiency) {
-                                  fuelEfficiencyController.text = ref.read(fuelEfficiencyProvider);
-                                }
-                              });
-                            },
-                            child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
+                        SizedBox(height: 1),
+                        Container(
+                          width: double.infinity,
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFD1F3EF),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 1),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFD1F3EF),
-                                    borderRadius: BorderRadius.circular(10),
+                          child: isEditingName
+                              ? TextField(
+                                  controller: nameController,
+                                  style: TextStyle(
+                                    color: Color(0xFF45C4B0),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  child: isEditingFuelEfficiency
-                                      ? Container(
-                                          width: 55,
-                                          height: 35,
-                                          child: TextField(
-                                            controller: fuelEfficiencyController,
-                                            style: TextStyle(
-                                              color: Color(0xFF45C4B0),
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              contentPadding: EdgeInsets.zero,
-                                              isDense: true,
-                                            ),
-                                          ),
-                                        )
-                                      : Container(
-                                          width: 55,
-                                          height: 35,
-                                          child: Text(
-                                            fuelEfficiency,
-                                            style: TextStyle(
-                                              color: Color(0xFF45C4B0),
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                  ),
+                                )
+                              : Text(
+                                  userName,
+                                  style: TextStyle(
+                                    color: Color(0xFF45C4B0),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                                SizedBox(width: 8),
-                                Text("Km/L", style: TextStyle(
-                                  color: Color(0xFF45C4B0), fontSize: 24, fontWeight: FontWeight.w600)),
-                              ],
+                        ),
+                        SizedBox(height: 8),
+                        // 燃費
+                        Row(
+                          children: [
+                            Text("車の燃費", style: TextStyle(
+                              color: Color(0xFF45C4B0), fontSize: 13, fontWeight: FontWeight.w500)),
+                            SizedBox(width: 4),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isEditingFuelEfficiency = !isEditingFuelEfficiency;
+                                  if (!isEditingFuelEfficiency) {
+                                    fuelEfficiencyController.text = ref.read(fuelEfficiencyProvider);
+                                  }
+                                });
+                              },
+                              child: Icon(Icons.edit, size: 13, color: Color(0xFF45C4B0)),
                             ),
-                          ),
-                          if (isEditingName || isEditingFuelEfficiency)
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF7ED6C1),
-                                foregroundColor: Colors.white,
-                                shape: StadiumBorder(),
+                          ],
+                        ),
+                        SizedBox(height: 1),
+                        Container(
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFD1F3EF),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: isEditingFuelEfficiency
+                                          ? Container(
+                                              width: 55,
+                                              height: 35,
+                                              child: TextField(
+                                                controller: fuelEfficiencyController,
+                                                style: TextStyle(
+                                                  color: Color(0xFF45C4B0),
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                                decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  contentPadding: EdgeInsets.zero,
+                                                  isDense: true,
+                                                ),
+                                              ),
+                                            )
+                                          : Container(
+                                              width: 55,
+                                              height: 35,
+                                              child: Text(
+                                                fuelEfficiency,
+                                                style: TextStyle(
+                                                  color: Color(0xFF45C4B0),
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text("Km/L", style: TextStyle(
+                                      color: Color(0xFF45C4B0), fontSize: 24, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
                               ),
-                              onPressed: _saveChanges,
-                              child: Text("変更を保存", style: TextStyle(fontSize: 14)),
-                            ),
-                        ],
-                      ),
-                    ],
+                              if (isEditingName || isEditingFuelEfficiency)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF7ED6C1),
+                                      foregroundColor: Colors.white,
+                                      shape: StadiumBorder(),
+                                    ),
+                                    onPressed: _saveChanges,
+                                    child: Text("変更を保存", style: TextStyle(fontSize: 14)),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
