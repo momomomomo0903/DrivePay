@@ -102,7 +102,7 @@ class HomePageState extends ConsumerState<HomePage> {
 
   // レンタカー関連の状態管理
   bool _isRentalCar = false;
-  bool _includeGasFee = false;  // ガソリン代を含めるかどうかのフラグ
+  bool _includeGasFee = false; // ガソリン代を含めるかどうかのフラグ
 
   // エラーダイアログを表示する関数
   void _showErrorDialog(String message) {
@@ -313,12 +313,18 @@ class HomePageState extends ConsumerState<HomePage> {
                 children: [
                   SizedBox(
                     width: 150,
-                    child: Text('乗車人数', style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0))),
+                    child: Text(
+                      '乗車人数',
+                      style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0)),
+                    ),
                   ),
                   SizedBox(width: 17),
                   SizedBox(
                     width: 150,
-                    child: Text('グループを選択', style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0))),
+                    child: Text(
+                      'グループを選択',
+                      style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0)),
+                    ),
                   ),
                 ],
               ),
@@ -348,8 +354,10 @@ class HomePageState extends ConsumerState<HomePage> {
                             (group) => group['groupId'] == newValue,
                             orElse: () => {},
                           );
-                          if (selectedGroup.isNotEmpty && selectedGroup.length != null) {
-                            _numberController.text = selectedGroup["members"].length.toString();
+                          if (selectedGroup.isNotEmpty &&
+                              selectedGroup.length != null) {
+                            _numberController.text =
+                                selectedGroup["members"].length.toString();
                           }
                         });
                       },
@@ -440,13 +448,16 @@ class HomePageState extends ConsumerState<HomePage> {
                     String? errorMessage;
 
                     // 既存のバリデーション
-                    if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                    if (_fromController.text.isEmpty ||
+                        _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
                     } else if (_numberController.text.isEmpty) {
                       errorMessage = '乗車人数を入力してください';
 
                       // 乗車人数の数値チェック
-                    } else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    } else if (!RegExp(
+                      r'^\d+$',
+                    ).hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
                     } else if (int.parse(_numberController.text) <= 0) {
                       errorMessage = '乗車人数は1人以上で入力してください';
@@ -462,7 +473,9 @@ class HomePageState extends ConsumerState<HomePage> {
                     if (_isRentalCar) {
                       if (_rentalFeeController.text.isEmpty) {
                         errorMessage = 'レンタル代を入力してください';
-                      } else if (!RegExp(r'^\d+$').hasMatch(_rentalFeeController.text)) {
+                      } else if (!RegExp(
+                        r'^\d+$',
+                      ).hasMatch(_rentalFeeController.text)) {
                         errorMessage = 'レンタル代は数値で入力してください';
                       }
                     }
@@ -484,7 +497,8 @@ class HomePageState extends ConsumerState<HomePage> {
                     final number = _numberController.text;
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
-                    final rentalFee = _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
+                    final rentalFee =
+                        _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
 
                     final result = await fetchData(
                       from,
@@ -498,7 +512,7 @@ class HomePageState extends ConsumerState<HomePage> {
                     double totalCost = result['total'].toDouble();
                     // ガソリン代を計算（1kmあたり15円）
                     final gasFee = result['distance'] * 15;
-                    
+
                     if (_isRentalCar) {
                       totalCost += rentalFee;
                       if (_includeGasFee) {
@@ -510,23 +524,24 @@ class HomePageState extends ConsumerState<HomePage> {
                     }
 
                     final perPersonCost = totalCost / int.parse(number);
-                    
+
                     if (isLogin) {
                       ref.read(fromProvider.notifier).state = from;
                       ref.read(toProvider.notifier).state = to;
                       ref.read(groupIdProvider.notifier).state =
-                          '1745671777187'; // rkt9tuba4develop@gmail.com内のグループIDを仮で利用
+                          _selectedGroupId ?? '';
                     }
                     // 結果を表示するページに遷移
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ResultPage(
-                          perPersonAmount: perPersonCost.toInt(),
-                          peopleCount: result['people'],
-                          distance: result['distance'],
-                          groupId: _selectedGroupId,
-                        ),
+                        builder:
+                            (context) => ResultPage(
+                              perPersonAmount: perPersonCost.toInt(),
+                              peopleCount: result['people'],
+                              distance: result['distance'],
+                              groupId: _selectedGroupId,
+                            ),
                       ),
                     );
                   },
