@@ -23,6 +23,7 @@ class GroupDropdown extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isExpanded: true,
+          menuMaxHeight: 300,
           value: selectedGroupId,
           hint: const Text("選択してください"),
           items: [
@@ -38,7 +39,10 @@ class GroupDropdown extends StatelessWidget {
                 value: group['groupId'],
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(group['groupName'] ?? '名前なし'),
+                  child: Text(
+                    group['groupName'] ?? '名前なし',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               );
             }).toList(),
