@@ -55,13 +55,41 @@ class _GroupPageState extends ConsumerState<GroupPage> {
           ? const Center(child: CircularProgressIndicator())
           : groupState.groups.isEmpty
               ? Center(
-                  child: Text(
-                    'グループがありません\n右下の+ボタンから作成してください',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'グループがありません\n右下の+ボタンから作成してください',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('確認'),
+                              content: const Text('はい'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: const Text('ダイアログを表示'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff45c4b0),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 )
               : ListView.builder(
