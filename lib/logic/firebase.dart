@@ -12,8 +12,7 @@ class DB {
       final name = ref.watch(userNameProvider);
       final uid = ref.watch(userIdProvider);
       final mail = ref.watch(eMailProvider);
-      // final mailLogin = ref.watch(isMailLoginProvider);
-      // final GoogleLogin = ref.watch(isGoogleLoginProvider);
+      final fuelEfficiency = ref.watch(fuelEfficiencyProvider);
 
       if (uid == null || uid == "ログインしてください" || uid == "Null") {
         debugPrint("無効なUIDなので書き込みをスキップしました");
@@ -25,8 +24,7 @@ class DB {
         'uid': uid,
         'username': name,
         'email': mail,
-        // 'mailLogin': mailLogin,
-        // 'GoogleLogin': GoogleLogin,
+        'fuelEfficiency': fuelEfficiency,
         'updateDate': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -39,8 +37,7 @@ class DB {
       final name = ref.watch(userNameProvider);
       final uid = ref.watch(userIdProvider);
       final mail = ref.watch(eMailProvider);
-      // final mailLogin = ref.watch(isMailLoginProvider);
-      // final GoogleLogin = ref.watch(isGoogleLoginProvider);
+      final fuelEfficiency = ref.watch(fuelEfficiencyProvider);
 
       if (uid == null || uid == "ログインしてください" || uid == "Null") {
         debugPrint("無効なUIDなので書き込みをスキップしました");
@@ -52,8 +49,7 @@ class DB {
         'uid': uid,
         'username': name,
         'email': mail,
-        // 'mailLogin': mailLogin,
-        // 'GoogleLogin': GoogleLogin,
+        'fuelEfficiency': fuelEfficiency,
         'updateDate': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -68,12 +64,23 @@ class DB {
       // firestoreに書き込み
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final doc = await firestore.collection('users').doc(uid).get();
+      
+      // ユーザー名とメールアドレスの設定
       ref.read(userNameProvider.notifier).state =
           doc.data()?['username'] ?? 'ゲスト';
       ref.read(eMailProvider.notifier).state = doc.data()?['email'];
-      // ref.read(isGoogleLoginProvider.notifier).state =
-      //     doc.data()?['GoogleLogin'];
-      // ref.read(isMailLoginProvider.notifier).state = doc.data()?['mailLogin'];
+      
+      // 燃費データの設定（存在しない場合は11.3をデフォルト値として設定）
+      final fuelEfficiency = doc.data()?['fuelEfficiency'];
+      if (fuelEfficiency == null) {
+        ref.read(fuelEfficiencyProvider.notifier).state = '11.3';
+        // デフォルト値をデータベースに保存
+        await firestore.collection('users').doc(uid).set({
+          'fuelEfficiency': '11.3',
+        }, SetOptions(merge: true)); // merge: true で既存のデータを保持したまま更新
+      } else {
+        ref.read(fuelEfficiencyProvider.notifier).state = fuelEfficiency;
+      }
     } catch (e) {
       debugPrint("読み込みができませんでした。");
     }
