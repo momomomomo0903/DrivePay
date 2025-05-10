@@ -623,6 +623,20 @@ class HomePageState extends ConsumerState<HomePage> {
                               peopleCount: result['people'],
                               distance: result['distance'],
                               groupId: _selectedGroupId,
+                              parkingFee:
+                                  _parkingController.text.isEmpty
+                                      ? null
+                                      : int.parse(_parkingController.text),
+                              highwayFee:
+                                  _highwayController.text.isEmpty
+                                      ? null
+                                      : int.parse(_highwayController.text),
+                              gasFee:
+                                  _isRentalCar && _includeGasFee ||
+                                          !_isRentalCar
+                                      ? gasFee.toInt()
+                                      : null,
+                              rentalFee: _isRentalCar ? rentalFee : null,
                             ),
                       ),
                     );
