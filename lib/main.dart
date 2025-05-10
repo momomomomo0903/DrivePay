@@ -45,7 +45,7 @@ class _MyApp extends ConsumerState<MyApp> {
       title: 'DrivePay',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF6FFFE)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0x00DCFFF9)),
       ),
       home: const Firstpage(),
     );

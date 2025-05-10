@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:drivepay/UI/firstPage.dart';
 import 'package:drivepay/UI/component/webViewPage.dart';
 import 'package:drivepay/state/auth_status.dart';
-import 'package:drivepay/UI/auth/auth_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drivepay/UI/group.dart';
 import 'package:drivepay/UI/drivehistory.dart';

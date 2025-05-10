@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivepay/UI/auth/auth.dart';
 import 'package:drivepay/state/auth_status.dart';
 import 'package:drivepay/logic/firebase.dart';
+import 'package:drivepay/state/dribeLog_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ class AuthLogout {
     ref.read(userIdProvider.notifier).state = "ログインしてください";
     ref.read(userNameProvider.notifier).state = "ゲスト";
     ref.read(eMailProvider.notifier).state = "ログインしてください";
+    ref.read(historyItemProvider.notifier).state = [];
     AuthUI.logout(context);
   }
 }

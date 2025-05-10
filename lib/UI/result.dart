@@ -1,5 +1,4 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
-
 import 'package:drivepay/UI/component/result/share_icon.dart';
 import 'package:drivepay/UI/component/result/to_homepage_button.dart';
 import 'package:drivepay/UI/component/result/defaulter_list.dart';
@@ -9,7 +8,7 @@ import 'package:drivepay/services/group_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ResultPage extends StatefulWidget {
+class ResultPage extends ConsumerStatefulWidget {
   final int perPersonAmount;
   final int peopleCount;
   final double distance;
@@ -24,6 +23,13 @@ class ResultPage extends StatefulWidget {
   });
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final from = ref.watch(fromProvider);
+    final to = ref.watch(toProvider);
+    final groupId = ref.watch(groupIdProvider);
+    final isLogin = ref.watch(isLoginProvider);
+
+    int totalAmount = perPersonAmount * peopleCount;
   State<ResultPage> createState() => _ResultPageState();
 }
 
@@ -48,8 +54,18 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final from = ref.watch(fromProvider);
+    final to = ref.watch(toProvider);
+    final groupId = ref.watch(groupIdProvider);
+    final isLogin = ref.watch(isLoginProvider);
+
+    int totalAmount = perPersonAmount * peopleCount;
     int totalAmount = widget.perPersonAmount * widget.peopleCount;
+
+    if (isLogin) {
+      DB().firstAddDriveHistory(ref, from, to, distance, perPersonAmount, groupId);
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
