@@ -301,3 +301,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
     );
   }
 }
+
+class GroupPage {
+  const GroupPage();
+}

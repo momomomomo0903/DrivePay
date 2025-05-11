@@ -93,9 +93,9 @@ class _MapPageState extends State<MapPage> {
               if (address != null) {
                 await _mapLogic.showPlaceDetailsFromMarker(context, address);
               } else {
-                
+                Errorpage().errorUI(context,'住所の取得に失敗しました');                
               }
-            }Errorpage().errorUI(context,'住所の取得に失敗しました');
+            }
           },
         ),
         ElevatedButton(

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, 
+// use_build_context_synchronously
 import "package:drivepay/UI/component/input_conditions.dart";
 import "package:drivepay/UI/component/input_text.dart";
 import 'package:drivepay/UI/result.dart';
