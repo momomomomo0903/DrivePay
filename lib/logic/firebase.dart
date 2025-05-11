@@ -70,13 +70,13 @@ class DB {
           doc.data()?['username'] ?? 'ゲスト';
       ref.read(eMailProvider.notifier).state = doc.data()?['email'];
       
-      // 燃費データの設定（存在しない場合は11.3をデフォルト値として設定）
+      // 燃費データの設定（存在しない場合は15.0をデフォルト値として設定）
       final fuelEfficiency = doc.data()?['fuelEfficiency'];
       if (fuelEfficiency == null) {
-        ref.read(fuelEfficiencyProvider.notifier).state = '11.3';
+        ref.read(fuelEfficiencyProvider.notifier).state = '15.0';
         // デフォルト値をデータベースに保存
         await firestore.collection('users').doc(uid).set({
-          'fuelEfficiency': '11.3',
+          'fuelEfficiency': '15.0',
         }, SetOptions(merge: true)); // merge: true で既存のデータを保持したまま更新
       } else {
         ref.read(fuelEfficiencyProvider.notifier).state = fuelEfficiency;
