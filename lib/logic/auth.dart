@@ -19,6 +19,7 @@ class AuthLogout {
     ref.read(userIdProvider.notifier).state = "ログインしてください";
     ref.read(userNameProvider.notifier).state = "ゲスト";
     ref.read(eMailProvider.notifier).state = "ログインしてください";
+    ref.read(fuelEfficiencyProvider.notifier).state = "15.0";
     ref.read(historyItemProvider.notifier).state = [];
     AuthUI.logout(context);
   }
