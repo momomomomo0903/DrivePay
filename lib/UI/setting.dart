@@ -147,6 +147,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                                   ),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 11),
                                   ),
                                 )
                               : Text(
