@@ -496,8 +496,10 @@ class HomePageState extends ConsumerState<HomePage> {
                     );
                     // レンタカーとガソリン代の計算を追加
                     double totalCost = result['total'].toDouble();
-                    // ガソリン代を計算（1kmあたり15円）
-                    final gasFee = result['distance'] * 15;
+                    // ガソリン代を計算（ユーザー設定の燃費を使用）
+                    final userFuelEfficiency = double.parse(ref.read(fuelEfficiencyProvider));
+                    final gasPricePerLiter = 170.0; // 1Lあたり170円
+                    final gasFee = (result['distance'] / userFuelEfficiency) * gasPricePerLiter;
                     
                     if (_isRentalCar) {
                       totalCost += rentalFee;
