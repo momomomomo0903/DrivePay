@@ -210,7 +210,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                                                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                                                 decoration: InputDecoration(
                                                   border: InputBorder.none,
-                                                  contentPadding: EdgeInsets.zero,
+                                                  contentPadding: EdgeInsets.symmetric(vertical: 10),
                                                   isDense: true,
                                                 ),
                                               ),
