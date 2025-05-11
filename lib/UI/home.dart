@@ -17,8 +17,6 @@ import 'package:drivepay/services/group_service.dart';
 import 'package:drivepay/UI/component/home/group_dropdown.dart';
 
 final String apiKey = ApiKeys.api_key;
-List<Map<String, dynamic>> _groups = [];
-String? _selectedGroupId = null;
 
 Future<Map<String, dynamic>> fetchData(
   String from,
@@ -97,12 +95,19 @@ class HomePageState extends ConsumerState<HomePage> {
   final TextEditingController _highwayController = TextEditingController();
   final TextEditingController _rentalFeeController = TextEditingController();
 
+  // グローバル変数をクラス変数に変更
+  List<Map<String, dynamic>> _groups = [];
+  String? _selectedGroupId;
+
+  // Firebase認証のリスナー登録用
+  StreamSubscription<User?>? _authStateSubscription;
+
   // 経由地のコントローラーをリストで管理
   final List<TextEditingController> _viaControllers = [];
 
   // レンタカー関連の状態管理
   bool _isRentalCar = false;
-  bool _includeGasFee = false;  // ガソリン代を含めるかどうかのフラグ
+  bool _includeGasFee = false; // ガソリン代を含めるかどうかのフラグ
 
   // エラーダイアログを表示する関数
   void _showErrorDialog(String message) {
@@ -189,18 +194,88 @@ class HomePageState extends ConsumerState<HomePage> {
     super.initState();
     // 初期状態で経由1だけ追加
     _viaControllers.add(TextEditingController());
-    final uid = FirebaseAuth.instance.currentUser?.uid;
 
+    // Firebase認証の状態変化を監視
+    _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen((
+      User? user,
+    ) {
+      debugPrint('認証状態の変更を検知: ${user != null ? "ログイン中" : "未ログイン"}');
+      if (user != null && user.uid.isNotEmpty) {
+        _fetchGroups();
+      } else {
+        // ユーザーがnullの場合（ログアウト時）、グループ情報をクリア
+        if (mounted) {
+          setState(() {
+            _groups = [];
+            _selectedGroupId = null;
+          });
+        }
+      }
+    });
+
+    // 初期ロード時にもグループ取得を試みる
+    _fetchGroups();
+  }
+
+  @override
+  void dispose() {
+    // 認証状態のリスナーを解除
+    _authStateSubscription?.cancel();
+    // コントローラーの破棄
+    for (var controller in _viaControllers) {
+      controller.dispose();
+    }
+    _fromController.dispose();
+    _toController.dispose();
+    _numberController.dispose();
+    _parkingController.dispose();
+    _highwayController.dispose();
+    _rentalFeeController.dispose();
+    super.dispose();
+  }
+
+  // ログイン状態が変わったときの処理
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isLogin = ref.watch(isLoginProvider);
+    if (!isLogin) {
+      // Riverpodのログイン状態がfalseの場合、強制的にグループ情報をクリア
+      // これは認証状態の変更とは別に、UI側でのログイン状態の整合性を保つため
+      setState(() {
+        _groups = [];
+        _selectedGroupId = null;
+      });
+    }
+  }
+
+  // グループを取得する関数
+  void _fetchGroups() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null && uid.isNotEmpty) {
+      debugPrint('グループ情報の取得を開始: $uid');
       GroupService.fetchUserGroups(uid)
           .then((groups) {
-            setState(() {
-              _groups = groups;
-            });
+            if (mounted) {
+              // Widgetがまだマウントされているか確認
+              setState(() {
+                _groups = groups;
+                debugPrint('取得したグループ数: ${groups.length}');
+              });
+            }
           })
           .catchError((error) {
             debugPrint('グループの取得に失敗しました: $error');
           });
+    } else {
+      // uidがない場合はグループ情報をクリア
+      debugPrint('UIDが存在しないためグループ情報をクリア');
+      if (mounted) {
+        setState(() {
+          _groups = [];
+          _selectedGroupId = null;
+        });
+      }
     }
   }
 
@@ -313,13 +388,24 @@ class HomePageState extends ConsumerState<HomePage> {
                 children: [
                   SizedBox(
                     width: 150,
-                    child: Text('乗車人数', style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0))),
+                    child: Text(
+                      '乗車人数',
+                      style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0)),
+                    ),
                   ),
                   SizedBox(width: 17),
-                  SizedBox(
-                    width: 150,
-                    child: Text('グループを選択', style: TextStyle(fontSize: 16, color: Color(0xFF45C4B0))),
-                  ),
+                  _groups.isNotEmpty
+                      ? SizedBox(
+                        width: 150,
+                        child: Text(
+                          'グループを選択',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF45C4B0),
+                          ),
+                        ),
+                      )
+                      : SizedBox(width: 150),
                 ],
               ),
               const SizedBox(height: 4),
@@ -336,25 +422,29 @@ class HomePageState extends ConsumerState<HomePage> {
                     ),
                   ),
                   SizedBox(width: 16),
-                  SizedBox(
-                    width: 150,
-                    child: GroupDropdown(
-                      groups: _groups,
-                      selectedGroupId: _selectedGroupId,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedGroupId = newValue;
-                          final selectedGroup = _groups.firstWhere(
-                            (group) => group['groupId'] == newValue,
-                            orElse: () => {},
-                          );
-                          if (selectedGroup.isNotEmpty && selectedGroup.length != null) {
-                            _numberController.text = selectedGroup["members"].length.toString();
-                          }
-                        });
-                      },
-                    ),
-                  ),
+                  _groups.isNotEmpty
+                      ? SizedBox(
+                        width: 150,
+                        child: GroupDropdown(
+                          groups: _groups,
+                          selectedGroupId: _selectedGroupId,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedGroupId = newValue;
+                              final selectedGroup = _groups.firstWhere(
+                                (group) => group['groupId'] == newValue,
+                                orElse: () => {},
+                              );
+                              if (selectedGroup.isNotEmpty &&
+                                  selectedGroup.length != null) {
+                                _numberController.text =
+                                    selectedGroup["members"].length.toString();
+                              }
+                            });
+                          },
+                        ),
+                      )
+                      : SizedBox(width: 150),
                 ],
               ),
 
@@ -440,13 +530,16 @@ class HomePageState extends ConsumerState<HomePage> {
                     String? errorMessage;
 
                     // 既存のバリデーション
-                    if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+                    if (_fromController.text.isEmpty ||
+                        _toController.text.isEmpty) {
                       errorMessage = '出発地と到着地を入力してください';
                     } else if (_numberController.text.isEmpty) {
                       errorMessage = '乗車人数を入力してください';
 
                       // 乗車人数の数値チェック
-                    } else if (!RegExp(r'^\d+$').hasMatch(_numberController.text)) {
+                    } else if (!RegExp(
+                      r'^\d+$',
+                    ).hasMatch(_numberController.text)) {
                       errorMessage = '乗車人数は数値で入力してください';
                     } else if (int.parse(_numberController.text) <= 0) {
                       errorMessage = '乗車人数は1人以上で入力してください';
@@ -462,7 +555,9 @@ class HomePageState extends ConsumerState<HomePage> {
                     if (_isRentalCar) {
                       if (_rentalFeeController.text.isEmpty) {
                         errorMessage = 'レンタル代を入力してください';
-                      } else if (!RegExp(r'^\d+$').hasMatch(_rentalFeeController.text)) {
+                      } else if (!RegExp(
+                        r'^\d+$',
+                      ).hasMatch(_rentalFeeController.text)) {
                         errorMessage = 'レンタル代は数値で入力してください';
                       }
                     }
@@ -484,7 +579,8 @@ class HomePageState extends ConsumerState<HomePage> {
                     final number = _numberController.text;
                     final parking = _parkingController.text;
                     final highway = _highwayController.text;
-                    final rentalFee = _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
+                    final rentalFee =
+                        _isRentalCar ? int.parse(_rentalFeeController.text) : 0;
 
                     final result = await fetchData(
                       from,
@@ -500,7 +596,7 @@ class HomePageState extends ConsumerState<HomePage> {
                     final userFuelEfficiency = double.parse(ref.read(fuelEfficiencyProvider));
                     final gasPricePerLiter = 170.0; // 1Lあたり170円
                     final gasFee = (result['distance'] / userFuelEfficiency) * gasPricePerLiter;
-                    
+
                     if (_isRentalCar) {
                       totalCost += rentalFee;
                       if (_includeGasFee) {
@@ -512,23 +608,38 @@ class HomePageState extends ConsumerState<HomePage> {
                     }
 
                     final perPersonCost = totalCost / int.parse(number);
-                    
+
                     if (isLogin) {
                       ref.read(fromProvider.notifier).state = from;
                       ref.read(toProvider.notifier).state = to;
                       ref.read(groupIdProvider.notifier).state =
-                          '1745671777187'; // rkt9tuba4develop@gmail.com内のグループIDを仮で利用
+                          _selectedGroupId ?? '';
                     }
                     // 結果を表示するページに遷移
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ResultPage(
-                          perPersonAmount: perPersonCost.toInt(),
-                          peopleCount: result['people'],
-                          distance: result['distance'],
-                          groupId: _selectedGroupId,
-                        ),
+                        builder:
+                            (context) => ResultPage(
+                              perPersonAmount: perPersonCost.toInt(),
+                              peopleCount: result['people'],
+                              distance: result['distance'],
+                              groupId: _selectedGroupId,
+                              parkingFee:
+                                  _parkingController.text.isEmpty
+                                      ? null
+                                      : int.parse(_parkingController.text),
+                              highwayFee:
+                                  _highwayController.text.isEmpty
+                                      ? null
+                                      : int.parse(_highwayController.text),
+                              gasFee:
+                                  _isRentalCar && _includeGasFee ||
+                                          !_isRentalCar
+                                      ? gasFee.toInt()
+                                      : null,
+                              rentalFee: _isRentalCar ? rentalFee : null,
+                            ),
                       ),
                     );
                   },
