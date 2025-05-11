@@ -46,3 +46,4 @@ app.*.map.json
 
 lib/config/api_key.dart
 lib/config/bundleID.dart
+tools/.env
