@@ -48,11 +48,11 @@ class PaymentDetailPage extends StatelessWidget {
         ],
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
-        currentIndex: 0,
+        currentIndex: 3,
         onTap: (index) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
+            MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: index)),
             (route) => false,
           );
         },
