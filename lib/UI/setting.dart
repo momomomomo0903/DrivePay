@@ -74,7 +74,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                 padding: const EdgeInsets.only(top: 10),
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  padding: EdgeInsets.all(24),
+                  padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 16),
                   height: 255,
                   decoration: BoxDecoration(
                     color: Color(0xFFF6FFFE),
@@ -91,7 +91,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                         SizedBox(height: 1),
                         Container(
                           width: double.infinity,
-                          height: 40,
+                          height: 45,
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             color: Color(0xFFD1F3EF),
@@ -131,7 +131,7 @@ class _SettingPage extends ConsumerState<SettingPage> {
                         SizedBox(height: 1),
                         Container(
                           width: double.infinity,
-                          height: 40,
+                          height: 45,
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             color: Color(0xFFD1F3EF),
