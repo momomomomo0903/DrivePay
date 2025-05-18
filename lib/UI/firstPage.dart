@@ -40,9 +40,7 @@ class Firstpage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const MainScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
